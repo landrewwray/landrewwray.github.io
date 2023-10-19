@@ -25,13 +25,13 @@ theme: "minima"
 # rss: rss
 
 kramdown:
-  input: Kramdown
   syntax_highlighter_opts:
     disable: true
     
 plugins:
-  - jekyll-feed
   - jekyll-sitemap
+#  - jekyll-feed
+
 
 titles_from_headings:
   strip_title: true
