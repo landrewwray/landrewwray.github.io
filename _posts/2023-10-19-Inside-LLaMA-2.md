@@ -13,7 +13,7 @@ of parameters, so it’s difficult to develop a close feel for their internal st
 
 Still, there’s a lot of structure to the matrix values, even at a quick glance.  This post will give a tour of
 select matrices within the 7 billion parameter Llama-2 model and explore some of what the model has in mind as
-it generates text.  Llama-2 is a popular LLM that was released by Meta on July 21, 2023, with [this accompanying paper](https://arxiv.org/abs/2307.09288).  Some related learning resources are listed at the end of the article.
+it generates text.  Llama-2 is a popular LLM that was released by Meta on July 21, 2023, with <a href = "https://arxiv.org/abs/2307.09288" target = "_blank" rel = "noreferrer noopener">this accompanying paper</a>.  Some related learning resources are listed at the end of the article.
 
 I’ll devote a short section to each of these topics:
 1. What are the matrices, and how do they add up to 7B parameters?
@@ -32,7 +32,7 @@ I’ll devote a short section to each of these topics:
     
 **Figure 1: (left) A Llama-2 transformer block, and (right) a Llama-2 7B attention block.**
 
-#### The full set of matrices for Llama-2 is listed here.  Let’s tally the parameters: 
+#### The full set of matrices for Llama-2 is <a href = "/docs/Llama-2/Llama-2-tensors.md" target = "_blank" rel = "noreferrer noopener">listed here</a>.  Let’s tally the parameters: 
 Input encoder and output layers that map between the model dimension (4096) and the token vocabulary (32000).  I’ll refer to both of these 32000x4096 matrices as token ‘dictionaries’ in the text below.  That’s 2 * 4096 * 32000 = 262,144,000 parameters.
 1. Weight matrices for the transformer attention mechanism (Wk,Wq,Wv,Wo).  These are stored as 4096x4096 tensors in the Llama-2 download, but should be thought of as 32x128x4096 (or permutations thereof), as there are 32 attention heads.  That’s 4 * 40962 = 67,108,864 attention parameters per transformer.
 2. It’s worth noting that these head-specific matrices act in pairs as WvhTWoh and WqhTRTRWkh, where the R matrices apply positional encoding. Each WqhTRTRWkh pair behaves very similarly to the LoRA representation of a larger 4096x4096 tensor.
