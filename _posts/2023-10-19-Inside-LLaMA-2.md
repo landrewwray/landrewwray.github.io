@@ -141,3 +141,30 @@ The real problem with this dictionary is that we don’t know what the model is 
 
 ### 3. What words do the attention heads look for?
 
+The four weight matrices (Wk,Wq,Wv,Wo) are each stored as 4096x4096 tensors in the Llama-2 download, but are partitioned into 32 128x4096 “attention head” tensors (Wkh, Wqh, ...).  A heatmap representation of the matrix elements for one of these matrices <a href = "/docs/Llama-2/Weight-matrix-heatmap.md" target = "_blank" rel = "noreferrer noopener">can be viewed here</a>, together with a few notes on the features visible by eye.
+
+One starting point to dissect these matrices is to think of the 4096-long vectors as representing words, as they function through inner products with the token encodings. Taking an inner product between input token encodings and key/query vectors in the first layer reveals sensible patterns for the individual attention heads, with the ‘key’ vectors looking for tokens that occur to the left of the ‘query’ vectors.
+
+The very first head is a great example.  For head [0] (code output here), the key vectors map strongly to open parentheses and words that frequently open a parenthetical note such as "although", "occasionally", "approximately", “File”. This head also looks for word endings such as “ingly”, “demic”, and “aneous” that have similar associations – think “(amazingly, …”, “(surprisingly, …”, “(simultaneously, …” and so on.  The corresponding 0-indexed head query features closing parentheses, in keeping with the ‘key tokens to the left, query tokens to the right’ principle.  Head [5] does something similar for quotations.
+
+On the other hand, it’s overly simplistic to think of the head vectors as searching for single words.  And we’re glossing over the positional encoding.  As things stand, it’s unusual to see a single word with more than a ~30% projection onto a given 4096-long vector within Wk and Wq, so if we think of these vectors as words, we need to at least think of them as superpositions of words.
+
+In that vein, an alternative starting point based on the correlations in Fig. 2 is to consider that the encoding vector spaces may contain clustered vectors associated with similar properties or parts of speech. The key/query vectors could be pointing to the centers of these clusters – for example, to look for related adjective/noun pairs.
+
+It should also be noted that even though Llama-2 is a language model, the information encoded in model parameters is not purely linguistic. For example, a fascinating recent paper showed that there are neuron activations inside the Llama models that may give it a sense of continuous dimensions such as time and latitude/longitude.
+
+
+### 4. How do deep and shallow layers differ?
+
+The distribution of Wk/Wq/Wv/Wo values is approximately 0-centered, and evolves from a fat-tailed distribution towards a gaussian distribution as one goes deeper in the network.  A great metric to track this trend with is the ratio of standard deviation to the mean amplitude [σ/mean(abs(vect))], which has a value of ~1.25 for a 0-centered gaussian.
+
+<img src="/docs/assets/img/sigma-over-mean.png" target = "_blank" rel = "noreferrer noopener" alt = "Sigma divided by mean for attention matrices" width="600"/>
+
+**Figure 6: Parameter distribution by layer.**  Tracking the metric σ/mean(abs(vect)) versus layer in the neural network for 4096x4096 representations of the Wk, Wq, Wv, and Wo attention matrices. Blue curves show the mean value for vectors oriented along the 4096-long model dimension, while orange curves show the mean value for 4096-long vectors that cut across the attention heads. 
+
+Parameters in the relatively ‘overloaded’ Wk and Wq matrices have larger deviations from a gaussian distribution. I call these matrices ‘overloaded’ for two reasons: (1) because they combine before a nonlinear function (softmax) in a way that resembles a low rank LoRA representation of a larger matrix (exactly identical for identical key and query token indices); and (2) because their outputs need to directly parse the embeddings for both position and token vectorization.
+
+I expect that the highly non-gaussian distribution seen in the first two layers reflects that they are subject to more constraints than later dimensions - the first layers need to interface directly in a lossless way with input that is highly structured and specific on a per-token basis. (unlike later layers that see strongly overlapping outputs from multiple input tokens – see next Section!)  This is also part of a general theme that the first two layers and their outputs look quite different from later layers.
+
+
+### 5. What do the layer outputs look like?
