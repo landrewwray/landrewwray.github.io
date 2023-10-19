@@ -4,8 +4,8 @@
 
 This is a work in progress.  Comments or suggestions are welcome!  For longer messages, you can reach me at lawray.ai@gmail.com.
 
-Comic courtesy of [SMBC](https://www.smbc-comics.com/comic/conscious-6):
-![SMBC Sept. 19 2023](landrewwray.github.io/docs/assets/img/SMBC_LLM_consciousness.png)
+Comic courtesy of [SMBC](https://www.smbc-comics.com/comic/conscious-6):  
+<img src="https://github.com/landrewwray/landrewwray.github.io/blob/main/docs/assets/img/SMBC_LLM_consciousness.png" alt="SMBC Sept. 19 2023" width="500"/>
 
 It’s always been my philosophy that the best way to learn a model deeply is to hop into the code and track
 variables through a few key scenarios.  Unfortunately, large language models (LLM) these days have billions
