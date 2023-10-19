@@ -28,7 +28,7 @@ I’ll devote a short section to each of these topics:
 
 ### 1. What are the matrices, and how do they add up to 7B parameters?
 
-<img src="/docs/assets/img/Llama-transformer.png" target = "_blank" rel = "noreferrer noopener" alt = "SMBC Sept. 19 2023" width="250"/> &nbsp;&nbsp; <img src="/docs/assets/img/llama-attn-diagram.png" target = "_blank" rel = "noreferrer noopener" alt = "SMBC Sept. 19 2023" width="450"/>
+<img src="/docs/assets/img/Llama-transformer.png" target = "_blank" rel = "noreferrer noopener" alt = "Llama transformer diagram" width="250"/> &nbsp;&nbsp; <img src="/docs/assets/img/llama-attn-diagram.png" target = "_blank" rel = "noreferrer noopener" alt = "Llama attention diagram" width="450"/>
     
 **Figure 1: (left) A Llama-2 transformer block, and (right) a Llama-2 7B attention block.**
 
@@ -61,4 +61,20 @@ The vectorization of tokens in an LLM can bake in a lot of meaning, such as the 
 So, let’s look at a few word encodings!
 
 #### 2.A. Word association in the token encoding vector spaces:
+
+Let’s take a closer look at just the input dictionary, which has a similar structure to the output token dictionary.  First, some pictures:
+
+<img src="/docs/assets/img/input-dict-corr-girl.png" target = "_blank" rel = "noreferrer noopener" alt = "Input dict vector correlations" width="800"/>
+
+**Figure 2: Similarity of input word encodings.** Normalized inner products between the 4096-long encoding vectors for different single-token words. (amplitude A = <v1|v2> / sqrt(<v1|v1><v2|v2>), for vectors v1 and v2 read from the 32000x4096 input encoder layer)
+
+One thing that jumps out is that words with similar meanings are fairly consistent in having large inner products.  More than that, part of speech is a factor – the adjectives in Fig. 2 (“round”, “sharp”, “long”, and “short”) also have greater than average inner products with one another, and with other adjectives I’ve tested.  Adjectives addressing a similar property (“long”/“short”, “male”/”female” “red”/”yellow”) have even closer encodings.
+
+These correlations probably serve several purposes.  On the one hand, they allow a more compact (lower effective rank) representation of the dictionary, which will reduce accidental spillover (noise) onto other information encoded in the same 4096-long state vector.  On the other, they make it easier for the key and query (Wk and Wq) matrices of attention heads to look for part of speech agreement or for other specific characteristics (say, colors).
+
+For the output, this structure means that similar words will reinforce one another.  If you use the output dictionary to create an output vector containing an equal superposition of 3 tokens and two of them are colors, the chance of the model generating a color as the next token will be much greater than 2/3!  For example, defining v = v_color1 + v_color2 + v_other will give <v|v_color1> > <v|v_other>, assuming the single-token vectors are approximately normalized.
+
+It’s also noteworthy that the scale bar of Fig. 2 has only positive numbers. This wasn’t deliberate, and it turns out that token inner products are positive 81% of the time. My sense from casual examination is that they're generally (but not universally) positive for pairings of English words or word-parts, and more often negative for English-to-foreign pairings (particularly with East Asian characters). This seems to suggest that words from different languages can behave competitively, suppressing one another’s amplitude in the output dictionary register.
+
+There’s an even subtler form of word association that we can’t see in Fig. 2 – *words* in the input dictionary tend to look like *word competitions* in the output dictionary.  For example, the input embedding of “play” has large inner products with “ground” and “offs” in the output encoding!  To get into this, we’ll want to start looking at internal layers of the model.
 
