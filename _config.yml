@@ -14,15 +14,18 @@ linkedin_username: "l-andrew-wray-8309b472"
 #pinterest_username: username
 #youtube_username: username
 #googleplus_username: +username
-
+  
 #########################################################################################
 ######### Nothing below needs to be changed (unless you know what you're doing) #########
 #########################################################################################
 theme: "minima"
+  
 
-rss: rss
+
+# rss: rss
 
 kramdown:
+  input: Kramdown
   syntax_highlighter_opts:
     disable: true
     
