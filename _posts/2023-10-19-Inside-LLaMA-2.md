@@ -76,7 +76,7 @@ For the output, this structure means that similar words will reinforce one anoth
 
 It’s also noteworthy that the scale bar of Fig. 2 has only positive numbers. This wasn’t deliberate, and it turns out that token inner products are positive 81% of the time. My sense from casual examination is that they're generally (but not universally) positive for pairings of English words or word-parts, and more often negative for English-to-foreign pairings (particularly with East Asian characters). This seems to suggest that words from different languages can behave competitively, suppressing one another’s amplitude in the output dictionary register.
 
-There’s an even subtler form of word association that we can’t see in Fig. 2 – *words* in the input dictionary tend to look like *word competitions* in the output dictionary.  For example, the input embedding of “play” has large inner products with “ground” and “offs” in the output encoding!  To get into this, we’ll want to start looking at internal layers of the model.
+There’s an even subtler form of word association that we can’t see in Fig. 2 – *words* in the input dictionary tend to look like *word completions* in the output dictionary.  For example, the input embedding of “play” has large inner products with “ground” and “offs” in the output encoding!  To get into this, we’ll want to start looking at internal layers of the model.
 
 ### 2.B. Internal dictionaries of an LLM:
 
