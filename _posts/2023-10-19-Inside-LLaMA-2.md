@@ -62,7 +62,7 @@ So, let’s look at a few word encodings!
 
 #### 2.A. Word association in the token encoding vector spaces:
 
-Let’s take a closer look at just the input dictionary, which has a similar structure to the output token dictionary.  First, some pictures:
+Let’s take a closer look at just the input dictionary, which has a <a href = "/docs/input-vs-output.md" target = "_blank" rel = "noreferrer noopener">similar structure</a> to the output token dictionary.  First, some pictures:
 
 <img src="/docs/assets/img/input-dict-corr-girl.png" target = "_blank" rel = "noreferrer noopener" alt = "Input dict vector correlations" width="800"/>
 
@@ -209,49 +209,54 @@ Surprisingly, the output is mostly identical from one layer to the next.  If we 
 
 If we skip a few transformers, we find that the numbers decrease as expected for a random cumulative loss of correlation over a few layers, but then hit a plateau (Fig. 7, right – compare with dashed prediction curve). The “attention sink” coupling to the first ‘dummy’ token doesn’t seem to play a direct role in this, as the inner product between the dummy token output and other tokens tends to be just ~10%, and would largely vanish in the inter-layer inner product.
 
+<img src="/docs/assets/img/Same_layer_similarity.png" target = "_blank" rel = "noreferrer noopener" alt = "1-layer self similarity" width="500"/>
 
-Figure 11: Self-similarity of token outputs in the same layer. Average of normalized inner products between token outputs of the same layer. “Layer #0” represents the encoded input tokens prior to the first transformer layer. 
+**Figure 11: Self-similarity of token outputs in the same layer.** Average of normalized inner products between token outputs of the same layer. “Layer #0” represents the encoded input tokens prior to the first transformer layer. 
 
-Different token outputs of the same layer are also similar (Fig. 11), all the way through the network. Other short prompts (up to ~200 tokens) that I’ve tried yielded essentially identical trends, and even showed the same noise-like jitter seen in Fig. 11.
+Different token outputs of the same layer are also similar (Fig. 11), all the way through the network. Other short prompts (up to ~200 tokens) that I’ve tried yielded essentially identical trends, and even showed some of the same noise-like jitter seen in Fig. 11.
 
+This is getting long, but one last figure! 
 
-Figure 12: Layer output and RMSNorm scaling parameters. 
+<img src="/docs/assets/img/output-amps.png" target = "_blank" rel = "noreferrer noopener" alt = "1-layer self similarity" width="500"/>
 
-This is getting long, but one last figure!  The amplitude of layer outputs grows throughout most of the network (Fig. 12), and has a striking step anomaly going from the 2nd to 3rd layer.  A first guess would be that growing amplitude will weaken (or break at layer 2-3) the residual connections, but the scaling of transformer input (RMSNorm layer inputs) also grows with depth in the layer, and should counteract some of this effect.  Also, the first layer attention RMSNorm amplitudes are tiny and can even be negative – their interplay with the first two layers warrants a closer look.
+***Figure 12: Layer output RMS amplitude and the mean value of RMSNorm scaling parameters.*** 
 
+The amplitude of layer outputs grows throughout most of the network (Fig. 12), and has a striking step anomaly going from the 2nd to 3rd layer.  A first guess would be that growing amplitude will weaken (or break at layer 2-3) the residual connections, but the scaling of transformer input (RMSNorm layer inputs) also grows with depth in the layer, and should counteract some of this effect.  Also, the RMSNorm vector that rescales amplitudes going into the attention block of the first transformer layer are tiny and can even be negative – their interplay with the first two layers warrants a closer look.
 
 ### 6. Lessons for LLM architecture
 
 A few impressions:
 
-The model is performing analogue computations, so it is important to understand the effective “noise” that disrupts the fidelity of encoded information.  There are clear noise issues with the fidelity of information read by the input, output, and middle dictionaries, but one can’t tell if this is noise in the model or just an issue with the dictionary.
+1. The model is performing analogue computations, so **it is important to understand the effective “noise” that disrupts the fidelity of encoded information.**  There are clear noise issues with the fidelity of information read by the input, output, and middle dictionaries, but one can’t tell if this is noise in the model or just an issue with the dictionary.
+   
+   A simple interpretation of this would be that because the model is using multiple dictionaries, any incomplete orthogonalization between the dictionary vector spaces will cause words used by one dictionary to come across as noise for all the others.  This gives the model strong motivation to compress the effective rank of each dictionary matrix (such as the 32000x4096 input encoding), though the overlap between the dictionaries also has a meaningful structure as we saw in Fig. 4-5.
+   
+   In practice the registries are <a href = "/docs/input-vs-output.md" target = "_blank" rel = "noreferrer noopener">not very orthogonal at all (see SVD figure)</a>.  The tradeoff the model seems to have accepted is that each registry can encode words with high specificity, but contains just a few intelligible words and has a high noise floor. (possibly Anoise~0.07 in Fig. 4-5)
 
-A simple interpretation of this would be that because the model is using multiple dictionaries, any incomplete orthogonalization between the dictionary vector spaces will cause words used by one dictionary to come across as noise for all the others.  This gives the model strong motivation to compress the effective rank of each dictionary matrix (such as the 32000x4096 input encoding), though the overlap between the dictionaries also has a meaningful structure as we saw in Fig. 4-5.
+2. A brave interpretation of point (1) would be that the **model dimension sets the capacity of the model for internal metacognition**.  If we extrapolate from a noise floor of 0.07, each 4096-long token vector within the model could contain an absolute maximum of ~200 legible embedded words (200 ~ 1/0.07<sup>2</sup>).  However, even the amplitude of ‘illegible’ words could be relevant to performance of the model, as successive transformers adding weakly to the amplitude of an illegible word can eventually bring it through the noise floor.  It’s worth remembering that output amplitudes shift quite slowly from one transformer layer to the next, and the middle of the model (16th layer output) has a ~0.2 average correlation coefficient with the final output.
 
-In practice the registries are not very orthogonal at all (see SVD figure).  The tradeoff the model seems to have accepted is that each registry can encode words with high specificity, but contains just a few intelligible words and has a high noise floor. (possibly Anoise~0.07 in Fig. 4-5)
+3. **Attention to the first token – the attention sink phenomenon – seems to act as a highlighter for the first sentence, rather than just a ‘sink’**.  I'm assuming that the first sentence would be highlighted rather than ignored, as it’s the first context the model gets, but it’s also possible that the model has just adapted to ignore redundant initial prompts.
+  
+  It would be interesting to try manually manipulating attention to the first token (or weight from the 1st token Wv vector) in the context of prompt engineering, as a way to highlight important instructions.  Looking quickly (<a href = "docs/Llama-2/Attn-sink-vs-output-amp.md" target = "_blank" rel = "noreferrer noopener">plot here</a>), I see that there’s some positive correlation between the attention sink amplitude and output amplitude in the first ~10 layers of the transformer, which could be consistent with a highlighting effect, but later layers have a negative amplitude.
 
-A brave interpretation of point (1) would be that the model dimension sets the capacity of the model for internal metacognition.  If we extrapolate from a noise floor of 0.07, each 4096-long token vector within the model could contain an absolute maximum of ~200 legible embedded words (200~1/0.072).  However, even the amplitude of ‘illegible’ words could be relevant to performance of the model, as successive transformers adding weakly to the amplitude of an illegible word can eventually bring it through the noise floor.  It’s worth remembering that output amplitudes shift quite slowly from one transformer layer to the next, and the middle of the model (16th layer output) has a ~0.2 average correlation coefficient with the final output.
+4. The first sentence highlighting function touches on a fascinating question: **how does the model manage so well for vastly different numbers of prompt tokens (say, 20 versus 2000)?**  The model is applying the same kind of processing to inputs regardless of the context length, and
+<a href = "https://huggingface.co/blog/tomaarsen/attention-sinks" target = "_blank" rel = "noreferrer noopener">perplexity skyrockets</a> if you try to extend it beyond the trained context window. Amplitude of coupling to the attention sink gradually decays for longer prompts, and it’s easy to speculate at roles that this may be playing to stabilize model behavior.
 
-Attention to the first token – the attention sink phenomenon – seems to act as a highlighter for the first sentence, rather than just a ‘sink’.  I'm assuming that the first sentence would be highlighted rather than ignored, as it’s the first context the model gets, but it’s also possible that the model has just adapted to ignore redundant initial prompts.
+8. The strong similarity between transformer outputs at different token locations (30+% for later layers [confirmed with a longer ~200 character prompt]) makes me wonder how the model harmonizes its state when information from later tokens sharply contradicts or recontextualizes interpretations based on the earlier tokens.  This sort of scenario seems likely to generate bottlenecks for the masked attention architecture of current generative LLM, in which each token output is unaware of later tokens in the stream.
 
-It would be interesting to try manually manipulating attention to the first token (or weight from the 1st token Wv vector) in the context of prompt engineering, as a way to highlight important instructions.  Looking quickly (plot here), I see that there’s some positive correlation between the attention sink amplitude and output amplitude in the first ~10 layers of the transformer, which could be consistent with a highlighting effect, but later layers have a negative amplitude.
+9. The <a href = "https://arxiv.org/abs/2310.02207" target = "_blank" rel = "noreferrer noopener">first half of the model</a> seems to be specialized in grammatical parsing and memory retrieval, while we mostly see thoughtful updates to the output coming through in the last 1/3rd or so of the transformer layers.
 
-The first sentence highlighting function touches on a fascinating question: how does the model manage so well for vastly different numbers of prompt tokens (say, 20 versus 2000)?  The model is applying the same kind of processing to inputs regardless of the context length, and perplexity skyrockets if you try to extend it beyond the trained context window. Amplitude of coupling to the attention sink gradually decays for longer prompts, and it’s easy to speculate at roles that this may be playing to stabilize model behavior.
+12. The gaussian parameter distributions in the encoder and deeper attention layers is a striking feature, and gaussian distributions are also seen in the feedforward network. My very shallow take is that there’s a vast set of similarly optimized states, and the convergence towards one of these probably looks like a random walk with respect to the basis we’re observing from.
 
-The strong similarity between transformer outputs at different token locations (30+% for later layers [confirmed with a longer ~200 character prompt]) makes me wonder how the model harmonizes its state when information from later tokens sharply contradicts or recontextualizes interpretations based on the earlier tokens.  This sort of scenario seems likely to generate bottlenecks for the masked attention architecture of current generative LLM, in which each token output is unaware of later tokens in the stream.
-
-The first half of the model seem to be specialized in grammatical parsing and memory retrieval, while we mostly see thoughtful updates to the output coming through in the last 1/3rd or so of the transformer layers.
-
-The gaussian parameter distributions in the encoder and deeper attention layers is a striking feature, and gaussian distributions are also seen in the feedforward network. My very shallow take is that there’s a vast set of similarly optimized states, and the convergence towards one of these probably looks like a random walk with respect to the basis we’re observing from.
-
-A corollary to this would be that when the distribution is highly non-gaussian, the solution set is probably more constrained, and one should steer clear of low rank fine tuning techniques like LoRA.  We see this in weight matrices for the 1st two layers, and to some extent for the Wk and Wq matrices throughout the network.
+  A corollary to this would be that when the distribution is highly non-gaussian, the solution set is probably more constrained, and one should steer clear of low rank fine tuning techniques like LoRA.  We see this in weight matrices for the 1st two layers, and to some extent for the Wk and Wq matrices throughout the network.
 
 
 ### 7. Useful links
 
 Here are some helpful references:
-Matrix definitions for the attention mechanism.
-The Llama2 release paper.
-The excellent “Let’s build GPT” tutorial by Andrej Karpathy (2 hours).
-I’d recommend starting here if you want to run a quantized Llama-2 model on your own computer.  Here’s a link to my bare-bones GUI, which includes AI editor agents for a collaborative text generation experience.
-Jupyter notebooks used to generate most of the output will be *linked here* in a future update.
+1. <a href = "https://en.wikipedia.org/wiki/Transformer_(machine_learning_model)#Scaled_dot-product_attention" target = "_blank" rel = "noreferrer noopener">Matrix definitions</a> for the attention mechanism.
+2. The <a href = "https://arxiv.org/abs/2307.09288" target = "_blank" rel = "noreferrer noopener">Llama 2 release paper</a>.
+3. The excellent <a href = "https://www.youtube.com/watch?v=kCc8FmEb1nY" target = "_blank" rel = "noreferrer noopener">“Let’s build GPT” tutorial</a> by Andrej Karpathy (2 hours). 
+4. I’d recommend <a href = "https://github.com/ggerganov/llama.cpp" target = "_blank" rel = "noreferrer noopener">starting here</a> if you want to run a quantized Llama-2 model on your own computer.  Here’s a link to <a href = "https://github.com/landrewwray/LLaMA_editor_GUI" target = "_blank" rel = "noreferrer noopener">my bare-bones GUI</a>, which includes AI editor agents for a collaborative text generation experience.
+5. Jupyter notebooks used to generate most of the output will be \*linked here\* in a future update.
+
