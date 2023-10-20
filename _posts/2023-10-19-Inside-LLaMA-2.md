@@ -71,7 +71,7 @@ Let’s take a closer look at just the input dictionary, which has a <a href = "
 
 <img src="/docs/assets/img/input-dict-corr-girl.png" target = "_blank" rel = "noreferrer noopener" alt = "Input dict vector correlations" width="800"/>
 
-**Figure 3: Similarity of input word encodings.** Normalized inner products between the 4096-long encoding vectors for different single-token words. (amplitude A = &ltv1|v2&gt / sqrt(&ltv1|v1&gt&ltv2|v2&gt), for vectors v1 and v2 read from the 32000x4096 input encoder layer)
+**Figure 3: Similarity of input word encodings.** Normalized inner products between the 4096-long encoding vectors for different single-token words. (amplitude A = <v1\|v2> / sqrt(<v1\|v1><v2\|v2>), for vectors v1 and v2 read from the 32000x4096 input encoder layer)
 
 One thing that jumps out is that words with similar meanings are fairly consistent in having large inner products.  More than that, part of speech is a factor – the adjectives in Fig. 3 (“round”, “sharp”, “long”, and “short”) also have greater than average inner products with one another, and with other adjectives I’ve tested.  Adjectives addressing a similar property (“long”/“short”, “male”/”female” “red”/”yellow”) have even closer encodings.
 
