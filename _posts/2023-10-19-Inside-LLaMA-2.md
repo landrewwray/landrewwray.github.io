@@ -14,7 +14,7 @@ select matrices within the 7 billion parameter Llama 2 model and explore some of
 it generates text.  Llama 2 is a popular LLM that was released by Meta on July 21, 2023, with <a href = "https://arxiv.org/abs/2307.09288" target = "_blank" rel = "noreferrer noopener">this accompanying paper</a>.  Some related learning resources are listed at the end of the article.
 
 I’ll devote a short section to each of these topics:
-1. [What are the matrices, and how do they add up to 7B parameters?](1.-What-are-the-matrices,-and-how-do-they-add-up-to-7B-parameters?)
+1. [What are the matrices, and how do they add up to 7B parameters?](#1-what-are-the-matrices-and-how-do-they-add-up-to-7b-parameters)
 2. What can we directly decode from internal states of the model?  
     2.A. Word association in the token encoding vector spaces  
     2.B. Internal dictionaries of an LLM
