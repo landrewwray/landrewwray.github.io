@@ -12,8 +12,8 @@ variables through a few key scenarios.  Unfortunately, large language models (LL
 of parameters, so it’s difficult to develop a close feel for their internal structure at that level.
 
 Still, there’s a lot of structure to the matrix values, even at a quick glance.  This post will give a tour of
-select matrices within the 7 billion parameter Llama-2 model and explore some of what the model has in mind as
-it generates text.  Llama-2 is a popular LLM that was released by Meta on July 21, 2023, with <a href = "https://arxiv.org/abs/2307.09288" target = "_blank" rel = "noreferrer noopener">this accompanying paper</a>.  Some related learning resources are listed at the end of the article.
+select matrices within the 7 billion parameter Llama 2 model and explore some of what the model has in mind as
+it generates text.  Llama 2 is a popular LLM that was released by Meta on July 21, 2023, with <a href = "https://arxiv.org/abs/2307.09288" target = "_blank" rel = "noreferrer noopener">this accompanying paper</a>.  Some related learning resources are listed at the end of the article.
 
 I’ll devote a short section to each of these topics:
 1. What are the matrices, and how do they add up to 7B parameters?
@@ -30,11 +30,11 @@ I’ll devote a short section to each of these topics:
 
 <img src="/docs/assets/img/Llama-transformer.png" target = "_blank" rel = "noreferrer noopener" alt = "Llama transformer diagram" width="250"/> &nbsp;&nbsp; <img src="/docs/assets/img/llama-attn-diagram.png" target = "_blank" rel = "noreferrer noopener" alt = "Llama attention diagram" width="450"/>
     
-**Figure 1: (left) A Llama-2 transformer block, and (right) a Llama-2 7B attention block.**
+**Figure 1: (left) A Llama 2 transformer block, and (right) a Llama 2 7B attention block.**
 
-#### The full set of matrices for Llama-2 is <a href = "/docs/Llama-2/Llama-2-tensors.md" target = "_blank" rel = "noreferrer noopener">listed here</a>.  Let’s tally the parameters: 
+#### The full set of matrices for Llama 2 is <a href = "/docs/Llama-2/Llama-2-tensors.md" target = "_blank" rel = "noreferrer noopener">listed here</a>.  Let’s tally the parameters: 
 Input encoder and output layers that map between the model dimension (4096) and the token vocabulary (32000).  I’ll refer to both of these 32000x4096 matrices as token ‘dictionaries’ in the text below.  **That’s 2 * 4096 * 32000 = 262,144,000 parameters.**
-1. Weight matrices for the transformer attention mechanism (Wk,Wq,Wv,Wo).  These are stored as 4096x4096 tensors in the Llama-2 download, but should be thought of as 32x128x4096 (or permutations thereof), as there are 32 attention heads.  **That’s 4 * 4096<sup>2</sup> = 67,108,864 attention parameters per transformer.**
+1. Weight matrices for the transformer attention mechanism (Wk,Wq,Wv,Wo).  These are stored as 4096x4096 tensors in the Llama 2 download, but should be thought of as 32x128x4096 (or permutations thereof), as there are 32 attention heads.  **That’s 4 * 4096<sup>2</sup> = 67,108,864 attention parameters per transformer.**
 2. It’s worth noting that these head-specific matrices act in pairs as Wv<sub>h</sub><sup>T</sup>Wo<sub>h</sub> and Wq<sub>h</sub><sup>T</sup>R<sup>T</sup>RWk<sub>h</sub>, where the R matrices apply positional encoding. Each Wq<sub>h</sub><sup>T</sup>R<sup>T</sup>RWk<sub>h</sub> pair behaves very similarly to the <a href = "https://arxiv.org/abs/2106.09685" target = "_blank" rel = "noreferrer noopener">LoRA representation</a> of a larger 4096x4096 tensor.
 3. Weight matrices for the feed forward network, which maps from the model dimension (4096) to a higher internal dimension (11008), and then back to the model dimension.  This would typically involve two linear layers (4096x11008 and 11008x4096), but Llama uses a SwiGLU activation for the first layer which requires an additional matrix.  **That’s 3 * 4096 * 11008 = 135,266,304 feed forward parameters per transformer.**
 4. Note that there are 32 transformer layers, so one has 32 inequivalent versions of the matrices described in points (2-3)!  Each layer also includes two 4096-long rescaling vectors within the Llama equivalent of batch normalization (RMSNorm), and I see one final rescaling operation on the last transformer output - I’ll touch on this in Section 5. There is also a vector containing 64 frequencies used to create the <a href = "https://arxiv.org/abs/2104.09864" target = "_blank" rel = "noreferrer noopener">relative position encoding</a> R matrices. Putting it all together, we get:
