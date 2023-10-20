@@ -170,38 +170,42 @@ I expect that the highly non-gaussian distribution seen in the first two layers 
 
 There’s an infinite amount to say about this, but I want to kick things off by looking at the attention sink phenomenon identified in this paper [<a href = "https://arxiv.org/abs/2309.17453" target = "_blank" rel = "noreferrer noopener">Xiao et al, Sept. 2023</a>]. They observed that attention connecting back to the first token tends to be extremely strong (>~0.5 out of a max of 1) beyond the first two transformer layers. Here’s the figure from their paper:
 
-<figure style="border: 2px dashed red">
-   <img src="/docs/assets/img/Attn-sink-paper-fig2.png" target = "_blank" rel = "noreferrer noopener" alt = "Attention singk paper figure" width="800"/>
-</figure>
+---
+   <img src="/docs/assets/img/Attn-sink-paper-fig2.png" target = "_blank" rel = "noreferrer noopener" alt = "Attention sink paper figure" width="850"/>  
 
+---
 
 This isn’t because of specific information in the first token.  The first token (\<s>) is just a padding token, and the first 1x4096 token output of each layer is the same regardless of the prompt.  Instead, the authors propose: “We attribute the reason to the Softmax operation, which requires attention scores to sum up to one for all contextual tokens. Thus, even when the current query does not have a strong match in many previous tokens, the model still needs to allocate these unneeded attention values somewhere so it sums up to one.”
 
-The figures below show a couple of examples of how this plays out for a specific prompt (see captions). A few nuances immediately come into things:
-Attention head #15 in layer #5 is represented by a black row.  This means that it’s not sinking attention (much) onto the first token. Instead, the attention from this head goes almost entirely to the token that immediately precedes each query (not shown).
-The attention sink effect becomes much weaker immediately after the 2nd question mark.  In fact, the effect declines significantly at the end of the first sentence (or 2nd if they’re short) in all of the the tests I’ve done, usually coinciding with a sentence break. Here’s another example. This suggests that the 1st sentence is viewed differently from others by the model, and may relate to a common role of the first sentence in providing context for everything that follows. Attention to the 1st ‘dummy’ token will cause its value vector (Wv*x1) to be copied over to later token outputs, and may even be something the model uses to highlight meaningful tokens.
-One sees the very similar effects in deeper layers such as layer #25 (Fig. 8).
+The figures below show a couple of examples of how this plays out for a specific prompt (see captions):
 
-I’ll run with the same prompt for the rest of this section unless otherwise noted.
+<img src="/docs/assets/img/Attn-sink-l5.png" target = "_blank" rel = "noreferrer noopener" alt = "Layer 5 attention sink" width="500"/>
 
+**Figure 7: Attention sink effect versus output token.**  Attention to the first token is shown for each attention head in transformer layer #5. The end of each sentence (‘?’ character) is identified with arrows.  The prompt was: "Hey, are you conscious? Can you talk to me?\nI'm not conscious, I think?\nWhat should we talk about?”
 
-Figure 7: Attention sink effect versus output token.  The end of each sentence (‘?’ character) is identified with arrows.  The prompt was: "Hey, are you conscious? Can you talk to me?\nI'm not conscious, I think?\nWhat should we talk about?”
+We can see the attention sink effect as advertised, but a couple of things jump out:
+1. Attention head #15 in layer #5 is represented by a black row.  This means that it’s not sinking attention (much) onto the first token. Instead, the attention from this head goes almost entirely to the token that immediately precedes each query (not shown).
+2. The attention sink effect becomes much weaker immediately after the 2nd question mark.  In fact, the effect declines significantly at the end of the first sentence (or 2nd if they’re short) in all of the the tests I’ve done, usually coinciding with a sentence break. Here’s another example. **This suggests that the 1st sentence is viewed differently from others by the model, and may relate to a common role of the first sentence in providing context for everything that follows. Attention to the 1st ‘dummy’ token will cause its value vector (Wv*x1) to be copied over to later token outputs, and may even be something the model uses to highlight meaningful tokens.**
 
+One sees the very similar effects in deeper layers such as layer #25:
 
-Figure 8: Attention sink effect versus output token in layer #25.  Other details are as in Fig. 7.
+<img src="/docs/assets/img/Attn-sink-l25.png" target = "_blank" rel = "noreferrer noopener" alt = "Layer 25 attention sink" width="500"/>
+
+**Figure 8: Attention sink effect versus output token in layer #25.**  Other details are as in Fig. 7.
 
 The first sentence is consistently highlighted as seen in Fig. 7-8, but I haven’t spotted any other highlighted sentences in long prompts.  Instructing the AI to assume a new role (to go from an assistant to a lawyer or famous person, etc), doesn’t seem to do it, and nor does telling it that the next sentence will give it a new role.  Artificially adding a second instance of the first “dummy” token later in the prompt creates a second attention sink, but fails to result in a second highlighted sentence.
 
 OK, so how about the layer output?  The simplest thing to ask is, how similar is the output of a given layer to the output of the next layer at the same token position. Enter Fig. 9:
 
+<img src="/docs/assets/img/self-sim-1.png" target = "_blank" rel = "noreferrer noopener" alt = "1-layer self similarity" width="500"/>
 
-Figure 9: Self-similarity between the output of adjacent transformer layers. Normalized inner products between the 4096-long token vectors in each layer and the same token output of the next layer.
+**Figure 9: Self-similarity between the output of adjacent transformer layers.** Normalized inner products between the 4096-long token vectors in each layer and the same token output of the next layer.
 
 Surprisingly, the output is mostly identical from one layer to the next.  If we exclude the first two layers and the last layer, the average normalized inner product between each layer’s input and output is 0.92. The first two layers buck this trend, but they’re highly variable depending on the token (sigma = 0.25 and 0.16). The last layer sees a large drop in correlation to 58% in this example, suggesting some significant final massaging of the vectors before projecting onto the final output token basis.  Still, a naive take would be that the vectors defining word output are mostly settled by several layers before the end of the network.
 
+<img src="/docs/assets/img/self-sim-5.png" target = "_blank" rel = "noreferrer noopener" alt = "1-layer self similarity" width="400"/><img src="/docs/assets/img/self-sim-15.png" target = "_blank" rel = "noreferrer noopener" alt = "1-layer self similarity" width="400"/>
 
-
-Figure 10: Self-similarity of token outputs over longer distances. Equivalent plots to Fig. 6, but with (left) 5- and (right) 15-layer gap between the compared vectors. A dashed prediction curve has been added showing the expected trajectory of the mean curve if single-layer inner products were multiplied together over the indicated distance.
+**Figure 10: Self-similarity of token outputs over longer distances.** Equivalent plots to Fig. 9, but with (left) 5- and (right) 15-layer gap between the compared vectors. A dashed prediction curve has been added showing the expected trajectory of the mean curve if single-layer inner products were multiplied together over the indicated distance.
 
 If we skip a few transformers, we find that the numbers decrease as expected for a random cumulative loss of correlation over a few layers, but then hit a plateau (Fig. 7, right – compare with dashed prediction curve). The “attention sink” coupling to the first ‘dummy’ token doesn’t seem to play a direct role in this, as the inner product between the dummy token output and other tokens tends to be just ~10%, and would largely vanish in the inter-layer inner product.
 
