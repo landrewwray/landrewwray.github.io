@@ -72,13 +72,13 @@ One thing that jumps out is that words with similar meanings are fairly consiste
 
 These correlations probably serve several purposes.  On the one hand, they allow a more compact (lower effective rank) representation of the dictionary, which will reduce accidental spillover (noise) onto other information encoded in the same 4096-long state vector.  On the other, they make it easier for the key and query (Wk and Wq) matrices of attention heads to look for part of speech agreement or for other specific characteristics (say, colors).
 
-For the output, this structure means that similar words will reinforce one another.  If you use the output dictionary to create an output vector containing an equal superposition of 3 tokens and two of them are colors, the chance of the model generating a color as the next token will be much greater than 2/3!  For example, defining v = v_color1 + v_color2 + v_other will give <v|v_color1> > <v|v_other>, assuming the single-token vectors are approximately normalized.
+For the output, this structure means that similar words will reinforce one another.  If you use the output dictionary to create an output vector containing an equal superposition of 3 tokens and two of them are colors, the chance of the model generating a color as the next token will be much greater than 2/3!  For example, defining **v = v_color1 + v_color2 + v_other** will give output (logit) values **<v|v_color1> = <v|v_color1> > <v|v_other>**, for L2 normalized single-token vectors.
 
 It’s also noteworthy that the scale bar of Fig. 2 has only positive numbers. This wasn’t deliberate, and it turns out that token inner products are positive 81% of the time. My sense from casual examination is that they're generally (but not universally) positive for pairings of English words or word-parts, and more often negative for English-to-foreign pairings (particularly with East Asian characters). This seems to suggest that words from different languages can behave competitively, suppressing one another’s amplitude in the output dictionary register.
 
 There’s an even subtler form of word association that we can’t see in Fig. 2 – *words* in the input dictionary tend to look like *word completions* in the output dictionary.  For example, the input embedding of “play” has large inner products with “ground” and “offs” in the output encoding!  To get into this, we’ll want to start looking at internal layers of the model.
 
-### 2.B. Internal dictionaries of an LLM:
+#### 2.B. Internal dictionaries of an LLM:
 
 The persistent connections in the model (curved lines in Fig. 1(left)) cause the inputs to any given transformer layer to be partially copied over into the outputs, suggesting that the model will continue to have a relationship with these encodings over multiple transformer layers.  So… what happens when we use the input and output dictionaries to interpret layer outputs that they would usually not have access to?
 
@@ -167,3 +167,87 @@ I expect that the highly non-gaussian distribution seen in the first two layers 
 
 
 ### 5. What do the layer outputs look like?
+
+There’s an infinite amount to say about this, but I want to kick things off by looking at the attention sink phenomenon identified in this paper [<a href = "https://arxiv.org/abs/2309.17453" target = "_blank" rel = "noreferrer noopener">Xiao et al, Sept. 2023</a>]. They observed that attention connecting back to the first token tends to be extremely strong (>~0.5 out of a max of 1) beyond the first two transformer layers. Here’s the figure from their paper:
+
+<figure style="border: 2px dashed red">
+   <img src="/docs/assets/img/Attn-sink-paper-fig2.png" target = "_blank" rel = "noreferrer noopener" alt = "Attention singk paper figure" width="800"/>
+</figure>
+
+
+This isn’t because of specific information in the first token.  The first token (\<s>) is just a padding token, and the first 1x4096 token output of each layer is the same regardless of the prompt.  Instead, the authors propose: “We attribute the reason to the Softmax operation, which requires attention scores to sum up to one for all contextual tokens. Thus, even when the current query does not have a strong match in many previous tokens, the model still needs to allocate these unneeded attention values somewhere so it sums up to one.”
+
+The figures below show a couple of examples of how this plays out for a specific prompt (see captions). A few nuances immediately come into things:
+Attention head #15 in layer #5 is represented by a black row.  This means that it’s not sinking attention (much) onto the first token. Instead, the attention from this head goes almost entirely to the token that immediately precedes each query (not shown).
+The attention sink effect becomes much weaker immediately after the 2nd question mark.  In fact, the effect declines significantly at the end of the first sentence (or 2nd if they’re short) in all of the the tests I’ve done, usually coinciding with a sentence break. Here’s another example. This suggests that the 1st sentence is viewed differently from others by the model, and may relate to a common role of the first sentence in providing context for everything that follows. Attention to the 1st ‘dummy’ token will cause its value vector (Wv*x1) to be copied over to later token outputs, and may even be something the model uses to highlight meaningful tokens.
+One sees the very similar effects in deeper layers such as layer #25 (Fig. 8).
+
+I’ll run with the same prompt for the rest of this section unless otherwise noted.
+
+
+Figure 7: Attention sink effect versus output token.  The end of each sentence (‘?’ character) is identified with arrows.  The prompt was: "Hey, are you conscious? Can you talk to me?\nI'm not conscious, I think?\nWhat should we talk about?”
+
+
+Figure 8: Attention sink effect versus output token in layer #25.  Other details are as in Fig. 7.
+
+The first sentence is consistently highlighted as seen in Fig. 7-8, but I haven’t spotted any other highlighted sentences in long prompts.  Instructing the AI to assume a new role (to go from an assistant to a lawyer or famous person, etc), doesn’t seem to do it, and nor does telling it that the next sentence will give it a new role.  Artificially adding a second instance of the first “dummy” token later in the prompt creates a second attention sink, but fails to result in a second highlighted sentence.
+
+OK, so how about the layer output?  The simplest thing to ask is, how similar is the output of a given layer to the output of the next layer at the same token position. Enter Fig. 9:
+
+
+Figure 9: Self-similarity between the output of adjacent transformer layers. Normalized inner products between the 4096-long token vectors in each layer and the same token output of the next layer.
+
+Surprisingly, the output is mostly identical from one layer to the next.  If we exclude the first two layers and the last layer, the average normalized inner product between each layer’s input and output is 0.92. The first two layers buck this trend, but they’re highly variable depending on the token (sigma = 0.25 and 0.16). The last layer sees a large drop in correlation to 58% in this example, suggesting some significant final massaging of the vectors before projecting onto the final output token basis.  Still, a naive take would be that the vectors defining word output are mostly settled by several layers before the end of the network.
+
+
+
+Figure 10: Self-similarity of token outputs over longer distances. Equivalent plots to Fig. 6, but with (left) 5- and (right) 15-layer gap between the compared vectors. A dashed prediction curve has been added showing the expected trajectory of the mean curve if single-layer inner products were multiplied together over the indicated distance.
+
+If we skip a few transformers, we find that the numbers decrease as expected for a random cumulative loss of correlation over a few layers, but then hit a plateau (Fig. 7, right – compare with dashed prediction curve). The “attention sink” coupling to the first ‘dummy’ token doesn’t seem to play a direct role in this, as the inner product between the dummy token output and other tokens tends to be just ~10%, and would largely vanish in the inter-layer inner product.
+
+
+Figure 11: Self-similarity of token outputs in the same layer. Average of normalized inner products between token outputs of the same layer. “Layer #0” represents the encoded input tokens prior to the first transformer layer. 
+
+Different token outputs of the same layer are also similar (Fig. 11), all the way through the network. Other short prompts (up to ~200 tokens) that I’ve tried yielded essentially identical trends, and even showed the same noise-like jitter seen in Fig. 11.
+
+
+Figure 12: Layer output and RMSNorm scaling parameters. 
+
+This is getting long, but one last figure!  The amplitude of layer outputs grows throughout most of the network (Fig. 12), and has a striking step anomaly going from the 2nd to 3rd layer.  A first guess would be that growing amplitude will weaken (or break at layer 2-3) the residual connections, but the scaling of transformer input (RMSNorm layer inputs) also grows with depth in the layer, and should counteract some of this effect.  Also, the first layer attention RMSNorm amplitudes are tiny and can even be negative – their interplay with the first two layers warrants a closer look.
+
+
+### 6. Lessons for LLM architecture
+
+A few impressions:
+
+The model is performing analogue computations, so it is important to understand the effective “noise” that disrupts the fidelity of encoded information.  There are clear noise issues with the fidelity of information read by the input, output, and middle dictionaries, but one can’t tell if this is noise in the model or just an issue with the dictionary.
+
+A simple interpretation of this would be that because the model is using multiple dictionaries, any incomplete orthogonalization between the dictionary vector spaces will cause words used by one dictionary to come across as noise for all the others.  This gives the model strong motivation to compress the effective rank of each dictionary matrix (such as the 32000x4096 input encoding), though the overlap between the dictionaries also has a meaningful structure as we saw in Fig. 4-5.
+
+In practice the registries are not very orthogonal at all (see SVD figure).  The tradeoff the model seems to have accepted is that each registry can encode words with high specificity, but contains just a few intelligible words and has a high noise floor. (possibly Anoise~0.07 in Fig. 4-5)
+
+A brave interpretation of point (1) would be that the model dimension sets the capacity of the model for internal metacognition.  If we extrapolate from a noise floor of 0.07, each 4096-long token vector within the model could contain an absolute maximum of ~200 legible embedded words (200~1/0.072).  However, even the amplitude of ‘illegible’ words could be relevant to performance of the model, as successive transformers adding weakly to the amplitude of an illegible word can eventually bring it through the noise floor.  It’s worth remembering that output amplitudes shift quite slowly from one transformer layer to the next, and the middle of the model (16th layer output) has a ~0.2 average correlation coefficient with the final output.
+
+Attention to the first token – the attention sink phenomenon – seems to act as a highlighter for the first sentence, rather than just a ‘sink’.  I'm assuming that the first sentence would be highlighted rather than ignored, as it’s the first context the model gets, but it’s also possible that the model has just adapted to ignore redundant initial prompts.
+
+It would be interesting to try manually manipulating attention to the first token (or weight from the 1st token Wv vector) in the context of prompt engineering, as a way to highlight important instructions.  Looking quickly (plot here), I see that there’s some positive correlation between the attention sink amplitude and output amplitude in the first ~10 layers of the transformer, which could be consistent with a highlighting effect, but later layers have a negative amplitude.
+
+The first sentence highlighting function touches on a fascinating question: how does the model manage so well for vastly different numbers of prompt tokens (say, 20 versus 2000)?  The model is applying the same kind of processing to inputs regardless of the context length, and perplexity skyrockets if you try to extend it beyond the trained context window. Amplitude of coupling to the attention sink gradually decays for longer prompts, and it’s easy to speculate at roles that this may be playing to stabilize model behavior.
+
+The strong similarity between transformer outputs at different token locations (30+% for later layers [confirmed with a longer ~200 character prompt]) makes me wonder how the model harmonizes its state when information from later tokens sharply contradicts or recontextualizes interpretations based on the earlier tokens.  This sort of scenario seems likely to generate bottlenecks for the masked attention architecture of current generative LLM, in which each token output is unaware of later tokens in the stream.
+
+The first half of the model seem to be specialized in grammatical parsing and memory retrieval, while we mostly see thoughtful updates to the output coming through in the last 1/3rd or so of the transformer layers.
+
+The gaussian parameter distributions in the encoder and deeper attention layers is a striking feature, and gaussian distributions are also seen in the feedforward network. My very shallow take is that there’s a vast set of similarly optimized states, and the convergence towards one of these probably looks like a random walk with respect to the basis we’re observing from.
+
+A corollary to this would be that when the distribution is highly non-gaussian, the solution set is probably more constrained, and one should steer clear of low rank fine tuning techniques like LoRA.  We see this in weight matrices for the 1st two layers, and to some extent for the Wk and Wq matrices throughout the network.
+
+
+### 7. Useful links
+
+Here are some helpful references:
+Matrix definitions for the attention mechanism.
+The Llama2 release paper.
+The excellent “Let’s build GPT” tutorial by Andrej Karpathy (2 hours).
+I’d recommend starting here if you want to run a quantized Llama-2 model on your own computer.  Here’s a link to my bare-bones GUI, which includes AI editor agents for a collaborative text generation experience.
+Jupyter notebooks used to generate most of the output will be *linked here* in a future update.
