@@ -15,14 +15,14 @@ it generates text.  Llama 2 is a popular LLM that was released by Meta on July 2
 
 I’ll devote a short section to each of these topics:
 1. [What are the matrices, and how do they add up to 7B parameters?](#1-what-are-the-matrices-and-how-do-they-add-up-to-7b-parameters)
-2. What can we directly decode from internal states of the model?  
-    2.A. Word association in the token encoding vector spaces  
-    2.B. Internal dictionaries of an LLM
-3. What do the first attention heads look for?
-4. How do deep and shallow layers differ?
-5. What do the layer outputs look like?
-6. Lessons for LLM architecture
-7. Useful links
+2. [What can we directly decode from internal states of the model?](#2-what-can-we-directly-decode-from-internal-states-of-the-model)  
+    2.A. [Word association in the token encoding vector spaces](#2a-word-association-in-the-token-encoding-vector-spaces)  
+    2.B. [Internal dictionaries of an LLM](#2b-internal-dictionaries-of-an-llm)
+3. [What do the first attention heads look for?](#3-what-words-do-the-attention-heads-look-for)
+4. [How do deep and shallow layers differ?](#4-how-do-deep-and-shallow-layers-differ)
+5. [What do the layer outputs look like?](#5-what-do-the-layer-outputs-look-like)
+6. [Lessons for LLM architecture](#6-lessons-for-llm-architecture)
+7. [Useful links](#7-useful-links)
 
 ### 1. What are the matrices, and how do they add up to 7B parameters?
 
