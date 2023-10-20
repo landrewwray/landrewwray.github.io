@@ -1,0 +1,12 @@
+<h3>“Quick and dirty” recipe for the middle dictionary:</h3>
+
+<ol>
+<li>Select a list of words for the dictionary.  I chose the “I like the red ball…” prompt and an additional 500 words randomly selected from this list of 3000 common English words.</li>
+<li>Tokenize the words, and enter each one in a 2-token prompt: [&lts&gt, I], [&lts&gt, like], [&lts&gt, the], etc.</li>
+<li>Run the model for each 2-token prompt, and save a vector v representing the output of the second layer in the 2nd token location. For each model run:</li>
+    <ol>
+    <li> A. Remove the dummy (&lts&gt) token component from v, as |v’> = |v&gt - |dummy&gt&ltdummy|v&gt, where &ltdummy|v&gt denotes an inner product, and the v and s vectors are L2 normalized beforehand.  Note that &ltdummy|v’&gt = 0.  </li>
+    <li> B. Repeat the procedure in step 3.i. to remove the input dictionary vector component of the 2nd prompt token from v’.  </li>
+    <li> C. Normalize the vector and enter it in the new dictionary!  </li>
+    </ol>
+</ol>
