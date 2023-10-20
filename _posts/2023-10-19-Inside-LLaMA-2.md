@@ -28,9 +28,9 @@ I’ll devote a short section to each of these topics:
 
 ### 1. What are the matrices, and how do they add up to 7B parameters?
 
-<img src="/docs/assets/img/Llama-transformer.png" target = "_blank" rel = "noreferrer noopener" alt = "Llama transformer diagram" width="250"/> &nbsp;&nbsp;&nbsp;&nbsp; <img src="/docs/assets/img/llama-attn-diagram.png" target = "_blank" rel = "noreferrer noopener" alt = "Llama attention diagram" width="450"/>
+<img src="/docs/assets/img/Llama-transformer.png" target = "_blank" rel = "noreferrer noopener" alt = "Llama transformer diagram" width="300"/>
     
-**Figure 1: (left) A Llama 2 transformer block, and (right) a Llama 2 7B attention block.**
+**Figure 1: A Llama 2 transformer block.**
 
 #### The full set of matrices for Llama 2 is <a href = "/docs/Llama-2/Llama-2-tensors.html" target = "_blank" rel = "noreferrer noopener">listed here</a>.  Let’s tally the parameters: 
 1. Input encoder and output layers that map between the model dimension (4096) and the token vocabulary (32000).  I’ll refer to both of these 32000x4096 matrices as token ‘dictionaries’ in the text below.  **That’s 2 * 4096 * 32000 = 262,144,000 parameters.**
@@ -44,9 +44,14 @@ I’ll devote a short section to each of these topics:
 = <b>6,738,415,680 total parameters</b>
 </pre>
 #### We’ll also take a look at several internal state matrices:
+
 1. Attention matrices (#tokens x #tokens): Each attention head creates its own attention matrix, so if a context window contains 1000 input tokens, there will be 32 heads x 1000x1000 matrices per transformer layer.  However, with masked attention, only the bottom row of these attention matrices (a 1000-long vector) remains relevant for next-token generation.
-2. The attention block outputs #tokens x 4096 state vectors that are added to the transformer inputs - this recombination with earlier states is called a persistent connection (see curved lines in Fig. 1, left).  These vectors are interesting, but do not need to be cached when running the model, and are not explored closely in the current version of this document.
-3. After the attention block persistent connection, the #tokens x 4096 state vectors are fed into the feedforward layer, which acts on each 4096-long state vector independently - it is not synthesizing information between the different state vectors.  The feedforward layer outputs another set of #tokens x 4096 state vectors, which we’ll look at in Sections 2 and 5.  Only one of these 4096-long vectors needs to be created when generating a new token, however the previous vectors all need to be cached. Counting the first layer’s input as a 33rd ‘layer’, this suggests a minimum **cache size of 270 MB for a prompt size of 1000**. (270 MB = 33 layers x #tokens x 4096 x 2 bytes/float)
+2. The attention block outputs #tokens x 4096 state vectors that are added to the transformer inputs - this recombination with earlier states is called a persistent connection (see curved lines in Fig. 1).  These vectors are interesting, but do not need to be cached when running the model, and are not explored closely in the current version of this document.
+3. After the attention block persistent connection, the #tokens x 4096 state vectors are fed into the feedforward layer, which acts on each 4096-long state vector independently - it is not synthesizing information between the different state vectors.  The feedforward layer outputs another set of #tokens x 4096 state vectors, which we’ll look at in Sections 2 and 5.  Only one of these 4096-long vectors needs to be created when generating a new token, however the previous vectors all need to be cached. Counting the first layer’s input as a 33rd ‘layer’, this contributes just 270 MB to the cache for a prompt size of 1000. (270 MB ~ 33 layers x #tokens x 4096 x 2 bytes/float)
+
+<img src="/docs/assets/img/llama-attn-diagram-1.png" target = "_blank" rel = "noreferrer noopener" alt = "Llama attention diagram" width="500"/>
+
+**Figure 2: A Llama 2 7B attention block.**
 
 ### 2. What can we directly decode from internal states of the model?
 
@@ -54,7 +59,7 @@ In the subsections below, we’ll see that some of what the model is ‘thinking
 
 At the start and end of the model, the 32000x4096 **input encoder** and **output** layers give a direct mapping between these internal 4096-long states and specific tokens (pieces of words).  I’ll refer to these matrices as ***dictionaries***, because they allow us to translate between the model activations and english words.  A third dictionary (and I suspect there are more) is only found in layer outputs within the transformer stack, and seems to reveal word associations that help the model parse meaning.  I’ll refer to this as the **‘middle’ dictionary**.
 
-The input and output dictionaries have significantly correlated internal structures (<a href = "/docs/Llama-2/input-vs-output.html" target = "_blank" rel = "noreferrer noopener">analysis here</a>), with meaningful relationships that I’ll circle back to in Figure 4.  However, all three of the dictionaries are approximately orthogonal to one another, and we’ll see that the model can use them simultaneously to encode different ‘registers of thought’.  The average Pearson correlation coefficient between input and output vectors for the same token is 0.016, just as for vectors of normally distributed random numbers (0.016 ~ 1/sqrt(4096)).
+The input and output dictionaries have significantly correlated internal structures (<a href = "/docs/Llama-2/input-vs-output.html" target = "_blank" rel = "noreferrer noopener">analysis here</a>), with meaningful relationships that I’ll circle back to in Figure 5.  However, all three of the dictionaries are approximately orthogonal to one another, and we’ll see that the model can use them simultaneously to encode different ‘registers of thought’.  The average Pearson correlation coefficient between input and output vectors for the same token is 0.016, just as for vectors of normally distributed random numbers (0.016 ~ 1/sqrt(4096)).
 
 The vectorization of tokens in an LLM can bake in a lot of meaning, such as the famous **v_king - v_man + v_woman ≈ v_queen** relation between <a href = "https://carl-allen.github.io/nlp/2019/07/01/explaining-analogies-explained.html" target = "_blank" rel = "noreferrer noopener">token embedding vectors in word2vec</a>. I haven’t been able to reproduce that sort of equation for Llama-2 7B, and there is a great reason to expect it not to hold: the final (and ‘middle’) state vectors of the model represent superpositions of dissimilar words, and an additive logic within the closely related vector spaces – say, **v_woman + v_crown = v_queen** – would create problems for this. If the model wanted to consider both “woman” and “crown” as possible next-word candidates, it would end up outputting “queen” instead.
 
@@ -66,21 +71,21 @@ Let’s take a closer look at just the input dictionary, which has a <a href = "
 
 <img src="/docs/assets/img/input-dict-corr-girl.png" target = "_blank" rel = "noreferrer noopener" alt = "Input dict vector correlations" width="800"/>
 
-**Figure 2: Similarity of input word encodings.** Normalized inner products between the 4096-long encoding vectors for different single-token words. (amplitude A = <v1|v2> / sqrt(<v1|v1><v2|v2>), for vectors v1 and v2 read from the 32000x4096 input encoder layer)
+**Figure 3: Similarity of input word encodings.** Normalized inner products between the 4096-long encoding vectors for different single-token words. (amplitude A = <v1|v2> / sqrt(<v1|v1><v2|v2>), for vectors v1 and v2 read from the 32000x4096 input encoder layer)
 
-One thing that jumps out is that words with similar meanings are fairly consistent in having large inner products.  More than that, part of speech is a factor – the adjectives in Fig. 2 (“round”, “sharp”, “long”, and “short”) also have greater than average inner products with one another, and with other adjectives I’ve tested.  Adjectives addressing a similar property (“long”/“short”, “male”/”female” “red”/”yellow”) have even closer encodings.
+One thing that jumps out is that words with similar meanings are fairly consistent in having large inner products.  More than that, part of speech is a factor – the adjectives in Fig. 3 (“round”, “sharp”, “long”, and “short”) also have greater than average inner products with one another, and with other adjectives I’ve tested.  Adjectives addressing a similar property (“long”/“short”, “male”/”female” “red”/”yellow”) have even closer encodings.
 
 These correlations probably serve several purposes.  On the one hand, they allow a more compact (lower effective rank) representation of the dictionary, which will reduce accidental spillover (noise) onto other information encoded in the same 4096-long state vector.  On the other, they make it easier for the key and query (Wk and Wq) matrices of attention heads to look for part of speech agreement or for other specific characteristics (say, colors).
 
 For the output, this structure means that similar words will reinforce one another.  If you use the output dictionary to create an output vector containing an equal superposition of 3 tokens and two of them are colors, the chance of the model generating a color as the next token will be much greater than 2/3!  For example, defining **v = v_color1 + v_color2 + v_other** will give output (logit) values **<v\|v_color1> = <v\|v_color1> > <v\|v_other>**, for L2 normalized single-token vectors.
 
-It’s also noteworthy that the scale bar of Fig. 2 has only positive numbers. This wasn’t deliberate, and it turns out that token inner products are positive 81% of the time. My sense from casual examination is that they're generally (but not universally) positive for pairings of English words or word-parts, and more often negative for English-to-foreign pairings (particularly with East Asian characters). This seems to suggest that words from different languages can behave competitively, suppressing one another’s amplitude in the output dictionary register.
+It’s also noteworthy that the scale bar of Fig. 3 has only positive numbers. This wasn’t deliberate, and it turns out that token inner products are positive 81% of the time. My sense from casual examination is that they're generally (but not universally) positive for pairings of English words or word-parts, and more often negative for English-to-foreign pairings (particularly with East Asian characters). This seems to suggest that words from different languages can behave competitively, suppressing one another’s amplitude in the output dictionary register.
 
-There’s an even subtler form of word association that we can’t see in Fig. 2 – *words* in the input dictionary tend to look like *word completions* in the output dictionary.  For example, the input embedding of “play” has large inner products with “ground” and “offs” in the output encoding!  To get into this, we’ll want to start looking at internal layers of the model.
+There’s an even subtler form of word association that we can’t see in Fig. 3 – *words* in the input dictionary tend to look like *word completions* in the output dictionary.  For example, the input embedding of “play” has large inner products with “ground” and “offs” in the output encoding!  To get into this, we’ll want to start looking at internal layers of the model.
 
 #### 2.B. Internal dictionaries of an LLM:
 
-The persistent connections in the model (curved lines in Fig. 1(left)) cause the inputs to any given transformer layer to be partially copied over into the outputs, suggesting that the model will continue to have a relationship with these encodings over multiple transformer layers.  So… what happens when we use the input and output dictionaries to interpret layer outputs that they would usually not have access to?
+The persistent connections in the model (curved lines in Fig. 1) cause the inputs to any given transformer layer to be partially copied over into the outputs, suggesting that the model will continue to have a relationship with these encodings over multiple transformer layers.  So… what happens when we use the input and output dictionaries to interpret layer outputs that they would usually not have access to?
 
 Let’s consider a short prompt containing a few clear internal word relationships: “**I like the red ball, but my girlfriend likes the larger ball. We like to go to the basketball court to play ball together. It is a lot of fun.**”
 
@@ -89,7 +94,7 @@ If we use the model’s input dictionary to translate internal transformer layer
 <img src="/docs/assets/img/Input_dict_like.png" target = "_blank" rel = "noreferrer noopener" alt = "Input dict word amplitudes" width="500"/>
 <img src="/docs/assets/img/Input_dict_ball.png" target = "_blank" rel = "noreferrer noopener" alt = "Input dict word amplitudes" width="500"/>
 
-**Figure 3: Reading internal states using the input encoding.** Transformer output vectors (4096-long vectors) in the (top) 3rd word token=“like” position and (bottom) 6th word token=“ball” position are decoded using the 32000x4096 input encoding matrix. Amplitude of the five largest vector elements is plotted and overlaid with the words that each matrix element represents. The transformer outputs are L2 normalized, but the input encoding matrix is not.
+**Figure 4: Reading internal states using the input encoding.** Transformer output vectors (4096-long vectors) in the (top) 3rd word token=“like” position and (bottom) 6th word token=“ball” position are decoded using the 32000x4096 input encoding matrix. Amplitude of the five largest vector elements is plotted and overlaid with the words that each matrix element represents. The transformer outputs are L2 normalized, but the input encoding matrix is not.
 
 The prompt contains 37 tokens, so the output of each transformer is a set of 37 4096-long vectors corresponding to each of the input token positions:
 
@@ -104,25 +109,25 @@ Thinks get more interested in the output encoding:
 
 <img src="/docs/assets/img/Output_dict_to.png" target = "_blank" rel = "noreferrer noopener" alt = "Output dict word amplitudes" width="600"/>
 
-**Figure 4: Reading internal states using the output dictionary.** Output works poorly with short prompts, so I’ve chosen the 25th token position to decode (“to” in “basketball court **to** play ball”).
+**Figure 5: Reading internal states using the output dictionary.** Output works poorly with short prompts, so I’ve chosen the 25th token position to decode (“to” in “basketball court **to** play ball”).
 
 Unlike the projection onto input encoding, this output projection shows us collections of words that aren’t all that closely associated, such as “shoot” and “play”. My favorite thing about this plot is the set of words in “layer 0”, which shows how the raw input encoding of “to” is read in the output encoding language.  Rather than being meaningless, the “to” input vector projects strongly onto a set of tokens that can expand the word into “tops”, “topped”, “topping”, and “toast”!  The input and output encodings don’t just have similar structures – they’re also nestled with one another in a way that causes the input embeddings to automatically suggest sequential tokens when read with the output encoding.
 
-In practice, these layer 0 continuations are usually incorrect, plots like Fig. 4 stop showing them within the first few layers.  The pattern I tend to see is that plausible words start to appear around the middle of the model (layers 10-20), and the word set becomes much better informed by logic and context in the last ~10 transformer layers.  A recent paper found that most factual knowledge seems to be encoded in the <a href = "https://arxiv.org/abs/2310.02207" target = "_blank" rel = "noreferrer noopener">first half of the model</a>, so it may be that the second half of the model is specialized in logical processing.
+In practice, these layer 0 continuations are usually incorrect, plots like Fig. 5 stop showing them within the first few layers.  The pattern I tend to see is that plausible words start to appear around the middle of the model (layers 10-20), and the word set becomes much better informed by logic and context in the last ~10 transformer layers.  A recent paper found that most factual knowledge seems to be encoded in the <a href = "https://arxiv.org/abs/2310.02207" target = "_blank" rel = "noreferrer noopener">first half of the model</a>, so it may be that the second half of the model is specialized in logical processing.
 
 Here’s another example of output-based decoding that shows similar patterns:
 
 <img src="/docs/assets/img/Output_dict_play.png" target = "_blank" rel = "noreferrer noopener" alt = "Output dict word amplitudes" width="600"/>
 
-**Figure 5: Reading internal states using the output dictionary.** The input word is “play”, as in “basketball court to **play** ball”).
+**Figure 6: Reading internal states using the output dictionary.** The input word is “play”, as in “basketball court to **play** ball”).
 
-The decodings of the internal states in Fig. 3-5 are still missing something important.  We can see that the model remembers its prompts, and we can see it spitballing ideas for its output, but we can’t see the kind of pairwise word associations that one would expect from the key/query structure of attention.  To look a little bit further, let’s create a very approximate dictionary based on how the model transforms tokens in its first few layers (<a href = "/docs/Llama-2/Creating-Middle.html" target = "_blank" rel = "noreferrer noopener">method here</a>).  I’ll refer to this as the **“middle” dictionary**.
+The decodings of the internal states in Fig. 4-6 are still missing something important.  We can see that the model remembers its prompts, and we can see it spitballing ideas for its output, but we can’t see the kind of pairwise word associations that one would expect from the key/query structure of attention.  To look a little bit further, let’s create a very approximate dictionary based on how the model transforms tokens in its first few layers (<a href = "/docs/Llama-2/Creating-Middle.html" target = "_blank" rel = "noreferrer noopener">method here</a>).  I’ll refer to this as the **“middle” dictionary**.
 
 Here’s what happens when we try to use it…
 
 <img src="/docs/assets/img/middle-I-like.png" target = "_blank" rel = "noreferrer noopener" alt = "Middle dict word amplitudes" width="600"/>
 
-**Figure 5: Reading internal states using the middle dictionary.** The 3rd token position is decode (“like” in “\<s> I **like** the red ball”).
+**Figure 7: Reading internal states using the middle dictionary.** The 3rd token position is decode (“like” in “\<s> I **like** the red ball”).
 
 Several things stand out:
 1. The middle dictionary has little overlap with the input and output dictionaries, which gives us very weak amplitudes in layers 0 and 32.  This is not an entirely trivial observation – it says that the model has opened up a near-orthogonal sector of its 4096-dimensional state space.
@@ -133,7 +138,7 @@ To mitigate the inaccuracy of the middle dictionary, we can limit the basis to j
 
 <img src="/docs/assets/img/middle-red-ball.png" target = "_blank" rel = "noreferrer noopener" alt = "Middle dict word amplitudes" width="600"/>
 
-**Figure 6: Reading internal states using the middle encoding.** The decoded token position corresponds with “ball” (“\<s> I like the red **ball**”).  The top eight word matches are plotted.
+**Figure 8: Reading internal states using the middle encoding.** The decoded token position corresponds with “ball” (“\<s> I like the red **ball**”).  The top eight word matches are plotted.
 
 The words “I”, “red” and “ball” are near the top of the list, possibly labeling the ball as a “red ball”.  However, the confusion between “I”, “We”, “my” and “it” fills up most of the top of the word register, making the plot difficult to read.
 
@@ -149,7 +154,7 @@ The very first head is a great example.  For head [0] (<a href = "/docs/Llama-2/
 
 On the other hand, it’s overly simplistic to think of the head vectors as searching for single words.  And we’re glossing over the positional encoding.  As things stand, it’s unusual to see a single word with more than a ~30% projection onto a given 4096-long vector within Wk and Wq, so if we think of these vectors as words, we need to at least think of them as superpositions of words.
 
-**In that vein, an alternative starting point** based on the correlations in Fig. 2 might be to consider that the encoding vector spaces may contain clustered vectors associated with similar properties or parts of speech. The key/query vectors could be pointing to the centers of these clusters – for example, to look for related adjective/noun pairs.
+**In that vein, an alternative starting point** based on the correlations in Fig. 3 might be to consider that the encoding vector spaces may contain clustered vectors associated with similar properties or parts of speech. The key/query vectors could be pointing to the centers of these clusters – for example, to look for related adjective/noun pairs.
 
 It should also be noted that even though Llama-2 is a language model, the information encoded in model parameters is not purely linguistic. For example, a fascinating <a href = "https://arxiv.org/abs/2310.02207" target = "_blank" rel = "noreferrer noopener">recent paper</a> showed that there are neuron activations inside the Llama models that may give it a sense of continuous dimensions such as time and latitude/longitude.
 
@@ -159,7 +164,7 @@ The distribution of Wk/Wq/Wv/Wo values is approximately 0-centered, and evolves 
 
 <img src="/docs/assets/img/sigma-over-mean.png" target = "_blank" rel = "noreferrer noopener" alt = "Sigma divided by mean for attention matrices" width="600"/>
 
-**Figure 6: Parameter distribution by layer.**  Tracking the metric σ/mean(abs(vect)) versus layer in the neural network for 4096x4096 representations of the Wk, Wq, Wv, and Wo attention matrices. Blue curves show the mean value for vectors oriented along the 4096-long model dimension, while orange curves show the mean value for 4096-long vectors that cut across the attention heads. 
+**Figure 9: Parameter distribution by layer.**  Tracking the metric σ/mean(abs(vect)) versus layer in the neural network for 4096x4096 representations of the Wk, Wq, Wv, and Wo attention matrices. Blue curves show the mean value for vectors oriented along the 4096-long model dimension, while orange curves show the mean value for 4096-long vectors that cut across the attention heads. 
 
 Parameters in the relatively ‘overloaded’ Wk and Wq matrices have larger deviations from a gaussian distribution. I call these matrices ‘overloaded’ for two reasons: (1) because they combine before a nonlinear function (softmax) in a way that resembles a low rank LoRA representation of a larger matrix (exactly identical for identical key and query token indices); and (2) because their outputs need to directly parse the embeddings for both position and token vectorization.
 
@@ -181,7 +186,7 @@ The figures below show a couple of examples of how this plays out for a specific
 
 <img src="/docs/assets/img/Attn-sink-l5.png" target = "_blank" rel = "noreferrer noopener" alt = "Layer 5 attention sink" width="500"/>
 
-**Figure 7: Attention sink effect versus output token.**  Attention to the first token is shown for each attention head in transformer layer #5. The end of each sentence (‘?’ character) is identified with arrows.  The prompt was: "Hey, are you conscious? Can you talk to me?\nI'm not conscious, I think?\nWhat should we talk about?”
+**Figure 10: Attention sink effect versus output token.**  Attention to the first token is shown for each attention head in transformer layer #5. The end of each sentence (‘?’ character) is identified with arrows.  The prompt was: "Hey, are you conscious? Can you talk to me?\nI'm not conscious, I think?\nWhat should we talk about?”
 
 We can see the attention sink effect as advertised, but a couple of things jump out:
 1. Attention head #15 in layer #5 is represented by a black row.  This means that it’s not sinking attention (much) onto the first token. Instead, the attention from this head goes almost entirely to the token that immediately precedes each query (not shown).
@@ -191,37 +196,37 @@ One sees the very similar effects in deeper layers such as layer #25:
 
 <img src="/docs/assets/img/Attn-sink-l25.png" target = "_blank" rel = "noreferrer noopener" alt = "Layer 25 attention sink" width="500"/>
 
-**Figure 8: Attention sink effect versus output token in layer #25.**  Other details are as in Fig. 7.
+**Figure 11: Attention sink effect versus output token in layer #25.**  Other details are as in Fig. 10.
 
-The first sentence is consistently highlighted as seen in Fig. 7-8, but I haven’t spotted any other highlighted sentences in long prompts.  Instructing the AI to assume a new role (to go from an assistant to a lawyer or famous person, etc), doesn’t seem to do it, and nor does telling it that the next sentence will give it a new role.  Artificially adding a second instance of the first “dummy” token later in the prompt creates a second attention sink, but fails to result in a second highlighted sentence.
+The first sentence is consistently highlighted as seen in Fig. 10-11, but I haven’t spotted any other highlighted sentences in long prompts.  Instructing the AI to assume a new role (to go from an assistant to a lawyer or famous person, etc), doesn’t seem to do it, and nor does telling it that the next sentence will give it a new role.  Artificially adding a second instance of the first “dummy” token later in the prompt creates a second attention sink, but fails to result in a second highlighted sentence.
 
-OK, so how about the layer output?  The simplest thing to ask is, how similar is the output of a given layer to the output of the next layer at the same token position. Enter Fig. 9:
+OK, so how about the layer output?  The simplest thing to ask is, how similar is the output of a given layer to the output of the next layer at the same token position. Enter Fig. 12:
 
 <img src="/docs/assets/img/self-sim-1.png" target = "_blank" rel = "noreferrer noopener" alt = "1-layer self similarity" width="500"/>
 
-**Figure 9: Self-similarity between the output of adjacent transformer layers.** Normalized inner products between the 4096-long token vectors in each layer and the same token output of the next layer.
+**Figure 12: Self-similarity between the output of adjacent transformer layers.** Normalized inner products between the 4096-long token vectors in each layer and the same token output of the next layer.
 
 Surprisingly, the output is mostly identical from one layer to the next.  If we exclude the first two layers and the last layer, the average normalized inner product between each layer’s input and output is 0.92. The first two layers buck this trend, but they’re highly variable depending on the token (sigma = 0.25 and 0.16). The last layer sees a large drop in correlation to 58% in this example, suggesting some significant final massaging of the vectors before projecting onto the final output token basis.  Still, a naive take would be that the vectors defining word output are mostly settled by several layers before the end of the network.
 
 <img src="/docs/assets/img/self-sim-5.png" target = "_blank" rel = "noreferrer noopener" alt = "1-layer self similarity" width="400"/><img src="/docs/assets/img/self-sim-15.png" target = "_blank" rel = "noreferrer noopener" alt = "1-layer self similarity" width="400"/>
 
-**Figure 10: Self-similarity of token outputs over longer distances.** Equivalent plots to Fig. 9, but with (left) 5- and (right) 15-layer gap between the compared vectors. A dashed prediction curve has been added showing the expected trajectory of the mean curve if single-layer inner products were multiplied together over the indicated distance.
+**Figure 13: Self-similarity of token outputs over longer distances.** Equivalent plots to Fig. 12, but with (left) 5- and (right) 15-layer gap between the compared vectors. A dashed prediction curve has been added showing the expected trajectory of the mean curve if single-layer inner products were multiplied together over the indicated distance.
 
-If we skip a few transformers, we find that the numbers decrease as expected for a random cumulative loss of correlation over a few layers, but then hit a plateau (Fig. 7, right – compare with dashed prediction curve). The “attention sink” coupling to the first ‘dummy’ token doesn’t seem to play a direct role in this, as the inner product between the dummy token output and other tokens tends to be just ~10%, and would largely vanish in the inter-layer inner product.
+If we skip a few transformers, we find that the numbers decrease as expected for a random cumulative loss of correlation over a few layers, but then hit a plateau (Fig. 13, right – compare with dashed prediction curve). The “attention sink” coupling to the first ‘dummy’ token doesn’t seem to play a direct role in this, as the inner product between the dummy token output and other tokens tends to be just ~10%, and would largely vanish in the inter-layer inner product.
 
 <img src="/docs/assets/img/Same_layer_similarity.png" target = "_blank" rel = "noreferrer noopener" alt = "1-layer self similarity" width="500"/>
 
-**Figure 11: Self-similarity of token outputs in the same layer.** Average of normalized inner products between token outputs of the same layer. “Layer #0” represents the encoded input tokens prior to the first transformer layer. 
+**Figure 14: Self-similarity of token outputs in the same layer.** Average of normalized inner products between token outputs of the same layer. “Layer #0” represents the encoded input tokens prior to the first transformer layer. 
 
-Different token outputs of the same layer are also similar (Fig. 11), all the way through the network. Other short prompts (up to ~200 tokens) that I’ve tried yielded essentially identical trends, and even showed some of the same noise-like jitter seen in Fig. 11.
+Different token outputs of the same layer are also similar (Fig. 14), all the way through the network. Other short prompts (up to ~200 tokens) that I’ve tried yielded essentially identical trends, and even showed some of the same noise-like jitter seen in Fig. 14.
 
 This is getting long, but one last figure! 
 
 <img src="/docs/assets/img/output-amps.png" target = "_blank" rel = "noreferrer noopener" alt = "1-layer self similarity" width="500"/>
 
-***Figure 12: Layer output RMS amplitude and the mean value of RMSNorm scaling parameters.*** 
+***Figure 15: Layer output RMS amplitude and the mean value of RMSNorm scaling parameters.*** 
 
-The amplitude of layer outputs grows throughout most of the network (Fig. 12), and has a striking step anomaly going from the 2nd to 3rd layer.  A first guess would be that growing amplitude will weaken (or break at layer 2-3) the residual connections, but the scaling of transformer input (RMSNorm layer inputs) also grows with depth in the layer, and should counteract some of this effect.  Also, the RMSNorm vector that rescales amplitudes going into the attention block of the first transformer layer are tiny and can even be negative – their interplay with the first two layers warrants a closer look.
+The amplitude of layer outputs grows throughout most of the network (Fig. 15), and has a striking step anomaly going from the 2nd to 3rd layer.  A first guess would be that growing amplitude will weaken (or break at layer 2-3) the residual connections, but the scaling of transformer input (RMSNorm layer inputs) also grows with depth in the layer, and should counteract some of this effect.  Also, the RMSNorm vector that rescales amplitudes going into the attention block of the first transformer layer are tiny and can even be negative – their interplay with the first two layers warrants a closer look.
 
 ### 6. Lessons for LLM architecture
 
@@ -229,9 +234,9 @@ A few impressions:
 
 1. The model is performing analogue computations, so **it is important to understand the effective “noise” that disrupts the fidelity of encoded information.**  There are clear noise issues with the fidelity of information read by the input, output, and middle dictionaries, but one can’t tell if this is noise in the model or just an issue with the dictionary.
    
-   A simple interpretation of this would be that because the model is using multiple dictionaries, any incomplete orthogonalization between the dictionary vector spaces will cause words used by one dictionary to come across as noise for all the others.  This gives the model strong motivation to compress the effective rank of each dictionary matrix (such as the 32000x4096 input encoding), though the overlap between the dictionaries also has a meaningful structure as we saw in Fig. 4-5.
+   A simple interpretation of this would be that because the model is using multiple dictionaries, any incomplete orthogonalization between the dictionary vector spaces will cause words used by one dictionary to come across as noise for all the others.  This gives the model strong motivation to compress the effective rank of each dictionary matrix (such as the 32000x4096 input encoding), though the overlap between the dictionaries also has a meaningful structure as we saw in Fig. 5-6.
    
-   In practice the registries are <a href = "/docs/Llama-2/input-vs-output.html" target = "_blank" rel = "noreferrer noopener">not very orthogonal at all (see SVD figure)</a>.  The tradeoff the model seems to have accepted is that each registry can encode words with high specificity, but contains just a few intelligible words and has a high noise floor. (possibly Anoise~0.07 in Fig. 4-5)
+   In practice the registries are <a href = "/docs/Llama-2/input-vs-output.html" target = "_blank" rel = "noreferrer noopener">not very orthogonal at all (see SVD figure)</a>.  The tradeoff the model seems to have accepted is that each registry can encode words with high specificity, but contains just a few intelligible words and has a high noise floor. (possibly Anoise~0.07 in Fig. 5-6)
 
 2. A brave interpretation of point (1) would be that the **model dimension sets the capacity of the model for internal metacognition**.  If we extrapolate from a noise floor of 0.07, each 4096-long token vector within the model could contain an absolute maximum of ~200 legible embedded words (200 ~ 1/0.07<sup>2</sup>).  However, even the amplitude of ‘illegible’ words could be relevant to performance of the model, as successive transformers adding weakly to the amplitude of an illegible word can eventually bring it through the noise floor.  It’s worth remembering that output amplitudes shift quite slowly from one transformer layer to the next, and the middle of the model (16th layer output) has a ~0.2 average correlation coefficient with the final output.
 
