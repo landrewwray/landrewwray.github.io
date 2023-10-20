@@ -61,7 +61,7 @@ The input and output dictionaries have significantly correlated internal structu
 
 The vectorization of tokens in an LLM can bake in a lot of meaning, such as the famous **v_king - v_man + v_woman ≈ v_queen** relation between <a href = "https://carl-allen.github.io/nlp/2019/07/01/explaining-analogies-explained.html" target = "_blank" rel = "noreferrer noopener">token embedding vectors in word2vec</a>. I haven’t been able to reproduce that sort of equation for Llama-2 7B, and there is a great reason to expect it not to hold: the final (and ‘middle’) state vectors of the model represent superpositions of dissimilar words, and an additive logic within the closely related vector spaces – say, **v_woman + v_crown = v_queen** – would create problems for this. If the model wanted to consider both “woman” and “crown” as possible next-word candidates, it would end up outputting “queen” instead.
 
-So, let’s look at a few word encodings!
+So, if that's not how it works, what do the word encodings actually look like?
 
 #### 2.A. Word association in the token encoding vector spaces:
 
