@@ -1,7 +1,5 @@
 ## Visualizing the inner world of a large language model (Llama 2 7B)
 
-— Last update: 10/20/2023
-
 Jargon warning!  This post gets very technical, as I'm trying to cover a huge amount of ground.  I'll unpack and expand on things in later posts.  It's also a work in progress.  Comments or suggestions are welcome!  For longer messages, you can reach me at lawray.ai@gmail.com.
 
 Comic courtesy of <a href = "https://www.smbc-comics.com/comic/conscious-6" target = "_blank" rel = "noreferrer noopener">SMBC</a>:  
