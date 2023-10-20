@@ -1,8 +1,10 @@
 ## Visualizing the inner world of a large language model (Llama 2 7B)
 
-— Last update: 10/19/2023
+— Last update: 10/20/2023
 
-This is a work in progress.  Comments or suggestions are welcome!  For longer messages, you can reach me at lawray.ai@gmail.com.
+It's also a work in progress.  Comments or suggestions are welcome!  For longer messages, you can reach me at lawray.ai@gmail.com.
+
+Jargon warning!  This post gets very technical, as I'm trying to cover a huge amount of ground.  I'll unpack and expand on some of it in later posts.
 
 Comic courtesy of <a href = "https://www.smbc-comics.com/comic/conscious-6" target = "_blank" rel = "noreferrer noopener">SMBC</a>:  
 <img src="/docs/assets/img/SMBC_LLM_consciousness.png" target = "_blank" rel = "noreferrer noopener" alt = "SMBC Sept. 19 2023" width="500"/>
@@ -16,7 +18,7 @@ select matrices within the 7 billion parameter Llama 2 model and explore some of
 it generates text.  Llama 2 is a popular LLM that was released by Meta on July 21, 2023, with <a href = "https://arxiv.org/abs/2307.09288" target = "_blank" rel = "noreferrer noopener">this accompanying paper</a>.  Some related learning resources are listed at the end of the article.
 
 I’ll devote a short section to each of these topics:
-1. What are the matrices, and how do they add up to 7B parameters?
+1. [What are the matrices, and how do they add up to 7B parameters?](1.-What-are-the-matrices,-and-how-do-they-add-up-to-7B-parameters?)
 2. What can we directly decode from internal states of the model?  
     2.A. Word association in the token encoding vector spaces  
     2.B. Internal dictionaries of an LLM
