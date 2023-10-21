@@ -10,8 +10,7 @@ this elegant cousin of ChatGPT.
 
 There were some big surprises for me.  For example:
 
-1. The inner states of the model aren't entirely unreadable.  It uses several 'dictionaries' to store internal 
-information -- lists that map between meanings (or tokens) and 4096-long state vectors found inside the model.  The 
+1. The inner states of the model aren't entirely unreadable.  It uses several matrices that I'm calling 'dictionaries' to store internal information -- lists that map between meanings (or tokens) and long state vectors found inside the model.  The 
 model sends its state vectors through 32 sequential layers of processing (a transformer stack), and if you have the 
 right dictionaries, you can see some of what the model is thinking during this process.
     
