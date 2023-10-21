@@ -5,7 +5,7 @@ Image from [PhD Comics](https://phdcomics.com/comics/archive.php?comicid=1959)
 <img src="/docs/assets/img/PhD-llama.png" target="_blank" rel="noreferrer noopener" alt="Llama transformer diagram" width="300" />
 
 The last post was a long and technical dive into the guts of Llama 2, so I want to zoom out and go over a 
-few of the highlights.  The full adventure is [linked here](https://landrewwray.github.io/2023/10/19/Inside-LLaMA-2.html), and I'll unpack some of it further in future posts.  Llama 2 is an open source cousin of ChatGPT that follows the same ["decoder-only" development path](https://www.interconnects.ai/p/llm-development-paths).
+few of the highlights.  The full adventure is [linked here](https://landrewwray.github.io/2023/10/19/Inside-LLaMA-2.html), and I'll revisit some of it in future posts.  Llama 2 is an open source cousin of ChatGPT that follows the same ["decoder-only" development path](https://www.interconnects.ai/p/llm-development-paths).
 
 The high points for me were:
 
