@@ -251,7 +251,7 @@ A few impressions:
 
 13. The gaussian parameter distributions in the encoder and deeper attention layers is a striking feature, and gaussian distributions are also seen in the feedforward network. My very shallow take is that there’s a vast set of similarly optimized states, and the convergence towards one of these probably looks like a random walk with respect to the basis we’re observing from.
 
-    A corollary to this would be that when the distribution is highly non-gaussian, the solution set is probably more constrained, and one should steer clear of low rank fine tuning techniques like LoRA.  We see this in weight matrices for the 1st two layers, and to some extent for the Wk and Wq matrices throughout the network.
+    A corollary to this would be that when the distribution is highly non-gaussian, the solution set is probably more constrained.  This would make me leary of using a low rank fine tuning technique like LoRA.  We see non-gaussian distributions in weight matrices for the 1st two layers, and to some extent in the Wk and Wq matrices throughout the network.
 
 
 ### 7. Useful links
