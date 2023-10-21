@@ -23,7 +23,7 @@ way, but I needed to hack one of them together so it's rather garbled.
 to parse the meaning of what it's working on.  The words of the prompt turn into vectors (via the input dictionary) 
 that read as word completions to the output dictionary.  If you turn the word "to" into an input vector and then 
 read it with the output dictionary, you get "ast" (as in "toast"), "pping" (as in "topping"), and so on!  The proposed 
-words become much more sensical in the last 16 layers.
+words become much more sensible in the last 16 layers.
 
 4. There were some clues as to how the length of the hidden model vectors (which have 4096 numbers each for Llama 2 7B) defines 
 the model's potential for internal metacognition -- how many words it can hold in mind at the same time before some 
