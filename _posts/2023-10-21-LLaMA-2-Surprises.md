@@ -8,7 +8,7 @@ The last post was a long and technical deep dive into the guts of Llama 2, so I 
 few of the highlights.  The full adventure is [linked here](https://landrewwray.github.io/2023/10/19/Inside-LLaMA-2.html) if you want to take a closer look at the insides of 
 this elegant cousin of ChatGPT.
 
-There were some big surprises for me, such as:
+There were some big surprises for me.  For example:
 
 1. The inner states of the model aren't entirely unreadable.  It uses several 'dictionaries' to store internal 
 information -- lists that map between meanings (or tokens) and 4096-long state vectors found inside the model.  The 
