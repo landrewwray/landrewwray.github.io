@@ -13,8 +13,8 @@ The high points for me were:
   
    The model sends its state vectors through 32 sequential layers of processing (a transformer stack), and if you know the right dictionaries, you can see some of what it's thinking during this process.  I really didn't expect this degree of stability and immediate interpretability across so many neural network layers.  In fact, it turns out that the state of the model changes by very little across a single transformer layer - often by just ~5%.
 
-3. The matrix that's used at the very end of the model to generate output can be used as one dictionary. If we use it 
-to generate output from earlier layers of the model, we can 'read its mind' and see how it trys out different 
+3. The matrix that's used at the very end of the model to generate output can be used as one dictionary. If we use this 
+to interpret state vectors within earlier layers of the model, we can 'read its mind' and see how it tries out different 
 possibilities for the next output token. There are at least two other dictionaries that can be used in a similar 
 way, but I needed to hack one of them together so it's rather garbled.
 
