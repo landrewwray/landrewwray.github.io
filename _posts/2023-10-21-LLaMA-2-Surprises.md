@@ -10,11 +10,9 @@ this elegant cousin of ChatGPT.
 
 There were some big surprises for me.  For example:
 
-1. The inner states of the model aren't entirely unreadable.  It uses several matrices that I'm calling 'dictionaries' to store internal information -- lists that map between meanings (or tokens) and long state vectors found inside the model.  The 
-model sends its state vectors through 32 sequential layers of processing (a transformer stack), and if you have the 
-right dictionaries, you can see some of what the model is thinking during this process.
+1. The sea of numbers inside the model isn't entirely inscruitable.  It uses several matrices that I'm calling 'dictionaries' to define vocabularies that it uses to store different kinds of information.  These dictionaries are lists that map between meanings (or word tokens) and long state vectors.  The model sends its state vectors through 32 sequential layers of processing (a transformer stack), and if you know the right dictionaries, you can see some of what it's thinking during this process.
     
-    I really didn't expect this degree of stability and immediate interpretability across so many neural network layers.  In fact, it turns out that the state of the model changes by very little across a single transformer layer - often by less than 5%.
+    I really didn't expect this degree of stability and immediate interpretability across so many neural network layers.  In fact, it turns out that the state of the model changes by very little across a single transformer layer - often by just ~5%.
 
 2. The matrix that's used at the very end of the model to generate output can be used as one dictionary. If we use it 
 to generate output from earlier layers of the model, we can 'read its mind' and see how it trying out different 
