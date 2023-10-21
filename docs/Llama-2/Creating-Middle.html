@@ -1,3 +1,16 @@
+<html>
+<head>
+<style>
+  body {
+    max-width: 800px;
+  }
+  p.mat {
+    max-width: 330px;
+  }
+</style>
+</head>
+<body>
+    
 <h3>“Quick and dirty” recipe for the middle dictionary:</h3>
 
 <ol>
@@ -10,3 +23,14 @@
     <li> C. Normalize the vector and enter it in the new dictionary!  </li>
     </ol>
 </ol>
+
+<p>One should bear in mind that this is just a quick stab at reconstructing a "middle dictionary", and it should be easy to do much better. Weaknesses of this approach include:</p>
+<ol>
+    <li>It probably yields a mixture of content from several dictionaries that are in use in the 2nd layer, including the output dictionary and whatever set of "middle dictionaries" the model creates.</li>
+    <li>The vocabulary of 'meanings' encoded by the middle dictionary does not need to be identical to the input dictionary.  By forcing a mapping onto tokens, it's likely that we're missing elements of relational context or other syntax that may exist within the middle dictionary.</li>
+</ol>
+    
+<p></p>
+
+</body>
+</html>
