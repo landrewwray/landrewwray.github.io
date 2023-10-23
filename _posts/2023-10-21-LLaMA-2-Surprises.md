@@ -19,10 +19,7 @@ possibilities for the next output token. For example, if the prompt says you "go
 4. The model actually starts coming up with possible next tokens *even before the first transformer layer!*  The words of the prompt turn into vectors (via the input dictionary) that read as word completions to the output dictionary.  If you turn the word "to" into an input vector and then 
 read it with the output dictionary, you get "ast" (as in "toast"), "pping" (as in "topping"), and so on!  The input encoding vector of "play" reads as words like "ground", "offs", and "test" in the output dictionary.
 
-5. There were some clues as to how the length of the model state vectors (which contain 4096 numbers each for Llama 2 7B) [defines 
-the model's potential for internal metacognition](https://landrewwray.github.io/2023/10/19/Inside-LLaMA-2.html#6-lessons-for-llm-architecture) -- how many words it can hold in mind at the same time before some 
-cross a noise threshold and start to become unintelligible. The answer seems to be something like 100, but even unintelligible
-words can come back into focus if the model reinforces them.  The same kind of noise will also place bounds on the
+5. There were some clues as to how the length of the state vectors helps define a key aspect of [the model's 'cognitive capacity'](https://landrewwray.github.io/2023/10/19/Inside-LLaMA-2.html#6-lessons-for-llm-architecture): how many words it can hold in mind at the same time and think about relationally before some cross a noise threshold and start to become unintelligible. The answer seems to be something like 100 for Llama 2 7B (with 4096 numbers per vector), but even unintelligible words can come back into focus if the model reinforces them.  The same kind of noise will also place bounds on the
 stability of non-word information, like continuous representations that it seems to have for
 <a href = "https://arxiv.org/abs/2310.02207" target = "_blank" rel = "noreferrer noopener">coordinates in time and space</a>.
 (Physicist's note: noisy analogue systems can be much more stable when they're not quantum computers!!)
