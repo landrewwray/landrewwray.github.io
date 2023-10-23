@@ -171,7 +171,7 @@ I expect that the highly non-gaussian distribution seen in the first two layers 
 
 ### 5. What do the layer outputs look like?
 
-There’s an infinite amount to say about this, but I want to kick things off by looking at the attention sink phenomenon identified in this paper [<a href = "https://arxiv.org/abs/2309.17453" target = "_blank" rel = "noreferrer noopener">Xiao et al, Sept. 2023</a>]. They observed that attention connecting back to the first token tends to be extremely strong (>~0.5 out of a max of 1) beyond the first two transformer layers. Here’s the figure from their paper:
+There’s an infinite amount to say about this, but I want to kick things off by looking at the attention sink phenomenon identified in this paper [<a href = "https://arxiv.org/abs/2309.17453" target = "_blank" rel = "noreferrer noopener">Xiao et al., Sept. 2023</a>]. They observed that attention connecting back to the first token tends to be extremely strong (>~0.5 out of a max of 1) beyond the first two transformer layers. Here’s the figure from their paper:
 
 ---
    <img src="/docs/assets/img/Attn-sink-paper-fig2.png" target = "_blank" rel = "noreferrer noopener" alt = "Attention sink paper figure" width="850"/>  
