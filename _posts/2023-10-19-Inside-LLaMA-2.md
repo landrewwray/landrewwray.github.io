@@ -37,7 +37,7 @@ I’ll devote a short section to each of these topics:
 4. Weight matrices for the feed forward network, which maps from the model dimension (4096) to a higher internal dimension (11008), and then back to the model dimension.  This would typically involve two linear layers (4096x11008 and 11008x4096), but Llama uses a SwiGLU activation for the first layer which requires an additional matrix.  **That’s 3 * 4096 * 11008 = 135,266,304 feed forward parameters per transformer.**
 5. Note that there are 32 transformer layers, so one has 32 inequivalent versions of the matrices described in points (2-3)!  Each layer also includes two 4096-long rescaling vectors within the Llama equivalent of batch normalization (RMSNorm), and I see one final rescaling operation on the last transformer output - I’ll touch on this in Section 5. There is also a vector containing 64 frequencies used to create the <a href = "https://arxiv.org/abs/2104.09864" target = "_blank" rel = "noreferrer noopener">relative position encoding</a> R matrices. Putting it all together, we get:
 <pre>
-  262,144,000 token dict + 64 position encoding freq + 4096 final RMSNorm   
+  262,144,000 token dict + 64 position encoding freq + 4096 final RMSNorm +
   32 layers * (67,108,864 attention + 135,266,304 feed forward + 2 * 4096 RMSNorm) 
 = <b>6,738,415,680 total parameters</b>
 </pre>
