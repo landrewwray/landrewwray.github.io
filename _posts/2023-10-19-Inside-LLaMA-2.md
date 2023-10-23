@@ -230,7 +230,7 @@ The amplitude of layer outputs grows throughout most of the network (Fig. 15), a
 
 A few impressions:
 
-1. The model is performing analogue computations, so **it is important to understand the effective “noise” that disrupts the fidelity of encoded information.**  There are clear noise issues with the fidelity of information read by the input, output, and middle dictionaries, but one can’t tell if this is noise in the model or just an issue with the dictionary.
+1. The model is performing analog computations, so **it is important to understand the effective “noise” that disrupts the fidelity of encoded information.**  There are clear noise issues with the fidelity of information read by the input, output, and middle dictionaries, but one can’t tell if this is noise in the model or just an issue with the dictionary.
    
    A simple interpretation of this would be that because the model is using multiple dictionaries, any incomplete orthogonalization between the dictionary vector spaces will cause words used by one dictionary to come across as noise for all the others.  This gives the model strong motivation to compress the effective rank of each dictionary matrix (such as the 32000x4096 input encoding), though the overlap between the dictionaries also has a meaningful structure as we saw in Fig. 5-6.
    
