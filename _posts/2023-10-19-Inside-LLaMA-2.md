@@ -101,7 +101,7 @@ The prompt contains 37 tokens, so the output of each transformer is a set of 37 
 2: “like”  
 3: “the”  
 
-… and so on, where “\<s>” is a dummy token placed at the start of every prompt. Projecting these vectors onto the input dictionary reveals that each input word continues to be readable all the way through the network.  There can be a little drift, like conflating “ball” and “Ball”, but it’s striking that this piece of information is protected from exponential decay as it propagates through 30 transformer layers. Instead, the amplitude drops to a roughly constant level beyond the 10th layer (A ~ 0.15 to 0.2), with a weight that corresponds to A<sup>2</sup>~ 3% of the full state vector.
+… and so on, where “\<s>” is a dummy token (the BOS token) placed at the start of every prompt. Projecting these vectors onto the input dictionary reveals that each input word continues to be readable all the way through the network.  There can be a little drift, like conflating “ball” and “Ball”, but it’s striking that this piece of information is protected from exponential decay as it propagates through 30 transformer layers. Instead, the amplitude drops to a roughly constant level beyond the 10th layer (A ~ 0.15 to 0.2), with a weight that corresponds to A<sup>2</sup>~ 3% of the full state vector.
 
 Thinks get more interested in the output encoding:
 
