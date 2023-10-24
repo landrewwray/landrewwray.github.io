@@ -205,7 +205,7 @@ OK, so how about the layer output?  The simplest thing to ask is, how similar is
 
 Surprisingly, transformer output is mostly identical from one layer to the next.  If we exclude the first two layers and the last layer, the average normalized inner product between each layer’s input and output is 0.92. The first two layers buck this trend, but they’re highly variable depending on the token (standard deviation σ = 0.25 and 0.16). The last layer sees a large drop in correlation to 58% in this example, suggesting some significant final massaging of the vectors.  Still, a naive take corroborated by Fig. 5-6 would be that the vectors defining word output are mostly settled by several layers before the end of the network.
 
-<img src="/docs/assets/img/self-sim-5.png" target = "_blank" rel = "noreferrer noopener" alt = "1-layer self similarity" width="400"/><img src="/docs/assets/img/self-sim-15.png" target = "_blank" rel = "noreferrer noopener" alt = "1-layer self similarity" width="400"/>
+<img src="/docs/assets/img/self-sim-5.png" target = "_blank" rel = "noreferrer noopener" alt = "1-layer self similarity" width="500"/><img src="/docs/assets/img/self-sim-15.png" target = "_blank" rel = "noreferrer noopener" alt = "1-layer self similarity" width="500"/>
 
 **Figure 13: Self-similarity of token outputs over longer distances.** Equivalent plots to Fig. 12, but with (top) 5- and (bottom) 15-layer gap between the compared vectors. A dashed prediction curve has been added showing the expected trajectory of the mean curve if single-layer inner products were multiplied together over the indicated distance.
 
