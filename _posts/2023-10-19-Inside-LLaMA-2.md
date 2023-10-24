@@ -83,11 +83,11 @@ There’s an even subtler form of word association that we can’t see in Fig. 3
 
 #### 2.B. Internal dictionaries of an LLM:
 
-The persistent connections in the model (curved lines in Fig. 1) cause the inputs to any given transformer layer to be partially copied over into the outputs, suggesting that the model will continue to have a relationship with these encodings over multiple transformer layers.  So… what happens when we use the input and output dictionaries to interpret layer outputs that they would usually not have access to?
+The persistent connections in the model (curved lines in Fig. 1) cause the inputs to any given transformer layer to be partially copied over into the transformer's outputs, suggesting that the model will continue to have a relationship with the same encodings over multiple transformer layers.  So… what happens when we use the input and output dictionaries to interpret state vectors (transformer outputs) from the middle of the transformer stack?
 
 Let’s consider a short prompt containing a few clear internal word relationships: “**I like the red ball, but my girlfriend likes the larger ball. We like to go to the basketball court to play ball together. It is a lot of fun.**”
 
-If we use the model’s input dictionary to translate internal transformer layer outputs, we get plots like these:
+Using the input dictionary results in plots like these:
 
 <img src="/docs/assets/img/Input_dict_like.png" target = "_blank" rel = "noreferrer noopener" alt = "Input dict word amplitudes" width="500"/>
 <img src="/docs/assets/img/Input_dict_ball.png" target = "_blank" rel = "noreferrer noopener" alt = "Input dict word amplitudes" width="500"/>
@@ -103,15 +103,15 @@ The prompt contains 37 tokens, so the output of each transformer is a set of 37 
 
 … and so on, where “\<s>” is a dummy token (the BOS token) placed at the start of every prompt. Projecting these vectors onto the input dictionary reveals that each input word continues to be readable all the way through the network.  There can be a little drift, like conflating “ball” and “Ball”, but it’s striking that this piece of information is protected from exponential decay as it propagates through 30 transformer layers. Instead, the amplitude drops to a roughly constant level beyond the 10th layer (A ~ 0.15 to 0.2), with a weight that corresponds to A<sup>2</sup>~ 3% of the full state vector.
 
-Thinks get more interested in the output encoding:
+Things get more interested when we use the output dictionary:
 
 <img src="/docs/assets/img/Output_dict_to.png" target = "_blank" rel = "noreferrer noopener" alt = "Output dict word amplitudes" width="600"/>
 
-**Figure 5: Reading internal states using the output dictionary.** Output works poorly with short prompts, so I’ve chosen the 25th token position to decode (“to” in “basketball court **to** play ball”).
+**Figure 5: Reading internal states using the output dictionary.** The model generates low-quality predictions with short prompts, so I’ve chosen the 25th token position to decode (“to” in “basketball court **to** play ball”).
 
 Unlike the projection onto input encoding, this output projection shows us collections of words that aren’t all that closely associated, such as “shoot” and “play”. My favorite thing about this plot is the set of words in “layer 0”, which shows how the raw input encoding of “to” is read in the output encoding language.  Rather than being meaningless, the “to” input vector projects strongly onto a set of tokens that can expand the word into “tops”, “topped”, “topping”, and “toast”!  The input and output encodings don’t just have similar structures – they’re also nestled with one another in a way that causes the input embeddings to automatically suggest sequential tokens when read with the output encoding.
 
-In practice, these layer 0 continuations are usually incorrect, plots like Fig. 5 stop showing them within the first few layers.  The pattern I tend to see is that plausible words start to appear around the middle of the model (layers 10-20), and the word set becomes much better informed by logic and context in the last ~10 transformer layers.  A recent paper found that most factual knowledge seems to be encoded in the <a href = "https://arxiv.org/abs/2310.02207" target = "_blank" rel = "noreferrer noopener">first half of the model</a>, so it may be that the second half of the model is specialized in logical processing.
+In practice, these layer 0 continuations are usually incorrect, and plots like Fig. 5 stop showing them within the first few layers.  The pattern I tend to see is that plausible words start to appear around the middle of the model (layers 10-20), and the word set becomes much better informed by logic and context in the last ~10 transformer layers.  A recent paper found that most factual knowledge seems to be encoded in the <a href = "https://arxiv.org/abs/2310.02207" target = "_blank" rel = "noreferrer noopener">first half of the model</a>, so it may be that the second half of the model is specialized in integrating context.
 
 Here’s another example of output-based decoding that shows similar patterns:
 
@@ -119,7 +119,7 @@ Here’s another example of output-based decoding that shows similar patterns:
 
 **Figure 6: Reading internal states using the output dictionary.** The input word is “play”, as in “basketball court to **play** ball”).
 
-The decodings of the internal states in Fig. 4-6 are still missing something important.  We can see that the model remembers its prompts, and we can see it spitballing ideas for its output, but we can’t see the kind of pairwise word associations that one would expect from the key/query structure of attention.  To look a little bit further, let’s create a very approximate dictionary based on how the model transforms tokens in its first few layers (<a href = "/docs/Llama-2/Creating-Middle.html" target = "_blank" rel = "noreferrer noopener">method here</a>).  I’ll refer to this as the **“middle” dictionary**.
+The decodings of the internal states in Fig. 4-6 are still missing something important.  We can see that the model remembers its prompts, and we can see it spitballing ideas for the next token, but we can’t see the kind of pairwise word associations that one would expect from the key/query structure of attention.  To look a little bit further, let’s create a very approximate dictionary based on how the model transforms tokens in the first couple of transformer layers (<a href = "/docs/Llama-2/Creating-Middle.html" target = "_blank" rel = "noreferrer noopener">method here</a>).  I’ll refer to this as the **“middle” dictionary**.
 
 Here’s what happens when we try to use it…
 
@@ -128,7 +128,7 @@ Here’s what happens when we try to use it…
 **Figure 7: Reading internal states using the middle dictionary.** The 3rd token position is decode (“like” in “\<s> I **like** the red ball”).
 
 Several things stand out:
-1. The middle dictionary has little overlap with the input and output dictionaries, which gives us very weak amplitudes in layers 0 and 32.  This is not an entirely trivial observation – it says that the model has opened up a near-orthogonal sector of its 4096-dimensional state space.
+1. The middle dictionary has little overlap with the input and output dictionaries, which gives us very weak amplitudes in layers 0 (the input vectors) and 32 (the final state vectors).  This is not an entirely trivial observation – it suggests that the model has opened up an isolated sector of its 4096-dimensional state space.  By "isolated", I mean that it seems like vectors in the middle dictionary do not closely resemble specific vectors in the other dictionaries.
 2. Unlike the input and output dictionaries, the middle dictionary shows us the previous word in the sentence - “I”!  Due to the attention masking within Llama and GPT-family models, the layer outputs in the 3rd token position (“\<s> I **like**”) are only aware of the input tokens “I”, “like”, and the dummy token “\<s>”.  I’ve removed \<s> from the middle dictionary basis by hand, and the remaining words “I” and “like” are both visible in this middle encoding register.
 3. The middle encoding vectors are probably rather inaccurate.  Words that are modestly related to “I” show up with similar amplitudes, including “We”, “my”, and fellow pronoun, “it”.
 
@@ -138,9 +138,9 @@ To mitigate the inaccuracy of the middle dictionary, we can limit the basis to j
 
 **Figure 8: Reading internal states using the middle encoding.** The decoded token position corresponds with “ball” (“\<s> I like the red **ball**”).  The top eight word matches are plotted.
 
-The words “I”, “red” and “ball” are near the top of the list, possibly labeling the ball as a “red ball”.  However, the confusion between “I”, “We”, “my” and “it” fills up most of the top of the word register, making the plot difficult to read.
+The words “I”, “red” and “ball” are near the top of the list, possibly labeling the ball as a “red ball”.  However, the confusion between “I”, “We”, “my” and “it” fills up most of the top of the displayed word list, making the plot difficult to read.
 
-The real problem with this dictionary is that we don’t know what the model is using it for or how similar it really is to the input and output dictionaries.  I would assume that the ‘words’ include relational information between different words as well as other nuances that we’re missing in this brute force translation.  There are more <a href = "https://arxiv.org/abs/1610.01644" target = "_blank" rel = "noreferrer noopener">computationally intensive approaches</a> that could be used to try to dig this out, but let’s move on for now.
+This dictionary would be easy to improve, but a central problem is that we don’t know what the model is using it for or how similar it really is to the input and output dictionaries.  I would assume that the middle dictionary vectors include relational information between different words, or other nuances that we’re missing in this brute force translation.  There are more <a href = "https://arxiv.org/abs/1610.01644" target = "_blank" rel = "noreferrer noopener">computationally intensive approaches</a> that could be used to try to dig this out, but let’s move on for now.
 
 ### 3. What words do the attention heads look for?
 
