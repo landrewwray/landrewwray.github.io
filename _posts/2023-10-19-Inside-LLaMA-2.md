@@ -195,27 +195,27 @@ One sees the very similar effects in deeper layers such as layer #25:
 
 **Figure 11: Attention sink effect versus output token in layer #25.**  Other details are as in Fig. 10.
 
-The first sentence is consistently highlighted as seen in Fig. 10-11, but I haven’t spotted any other highlighted sentences in long prompts.  Instructing the AI to assume a new role (to go from an assistant to a lawyer or famous person, etc), doesn’t seem to do it, and nor does telling it that the next sentence will give it a new role.  Artificially adding a second instance of the first “dummy” token later in the prompt creates a second attention sink, but fails to result in a second highlighted sentence.
+The first sentence is consistently highlighted as seen in Fig. 10-11, but I haven’t spotted any other highlighted sentences in long prompts.  Instructing the AI to assume a new role (to go from an assistant to a lawyer or famous person, etc), doesn’t seem to do it, and nor does telling it that the next sentence will give it a new role.  Artificially adding a second instance of the first “dummy” token later in the prompt creates a second attention sink that gets attention from all later query tokens, but it fails to result in a second highlighted sentence.
 
-OK, so how about the layer output?  The simplest thing to ask is, how similar is the output of a given layer to the output of the next layer at the same token position. Enter Fig. 12:
+OK, so how about the layer output?  The simplest thing to ask is, how similar is the output of a given layer to the output of the next layer at the same token position? Enter Fig. 12:
 
 <img src="/docs/assets/img/self-sim-1.png" target = "_blank" rel = "noreferrer noopener" alt = "1-layer self similarity" width="500"/>
 
-**Figure 12: Self-similarity between the output of adjacent transformer layers.** Normalized inner products between the 4096-long token vectors in each layer and the same token output of the next layer.
+**Figure 12: Self-similarity between the output of adjacent transformer layers.** Normalized inner products between the 4096-long state vectors in each layer and the same-token state vectors of the next layer.
 
-Surprisingly, the output is mostly identical from one layer to the next.  If we exclude the first two layers and the last layer, the average normalized inner product between each layer’s input and output is 0.92. The first two layers buck this trend, but they’re highly variable depending on the token (sigma = 0.25 and 0.16). The last layer sees a large drop in correlation to 58% in this example, suggesting some significant final massaging of the vectors before projecting onto the final output token basis.  Still, a naive take would be that the vectors defining word output are mostly settled by several layers before the end of the network.
+Surprisingly, transformer output is mostly identical from one layer to the next.  If we exclude the first two layers and the last layer, the average normalized inner product between each layer’s input and output is 0.92. The first two layers buck this trend, but they’re highly variable depending on the token (standard deviation σ = 0.25 and 0.16). The last layer sees a large drop in correlation to 58% in this example, suggesting some significant final massaging of the vectors.  Still, a naive take corroborated by Fig. 5-6 would be that the vectors defining word output are mostly settled by several layers before the end of the network.
 
 <img src="/docs/assets/img/self-sim-5.png" target = "_blank" rel = "noreferrer noopener" alt = "1-layer self similarity" width="400"/><img src="/docs/assets/img/self-sim-15.png" target = "_blank" rel = "noreferrer noopener" alt = "1-layer self similarity" width="400"/>
 
-**Figure 13: Self-similarity of token outputs over longer distances.** Equivalent plots to Fig. 12, but with (left) 5- and (right) 15-layer gap between the compared vectors. A dashed prediction curve has been added showing the expected trajectory of the mean curve if single-layer inner products were multiplied together over the indicated distance.
+**Figure 13: Self-similarity of token outputs over longer distances.** Equivalent plots to Fig. 12, but with (top) 5- and (bottom) 15-layer gap between the compared vectors. A dashed prediction curve has been added showing the expected trajectory of the mean curve if single-layer inner products were multiplied together over the indicated distance.
 
-If we skip a few transformers, we find that the numbers decrease as expected for a random cumulative loss of correlation over a few layers, but then hit a plateau (Fig. 13, right – compare with dashed prediction curve). The “attention sink” coupling to the first ‘dummy’ token doesn’t seem to play a direct role in this, as the inner product between the dummy token output and other tokens tends to be just ~10%, and would largely vanish in the inter-layer inner product.
+If we skip forward a few transformer layers, we find that state vector correlations initially resemble a prediction curve (dashed line in Fig. 13, top) that represents the  exponential decay-like trend expected if each layer contributed random changes. However, over longer distances, the level of correlation is significantly higher than this would predict, consistent with our observation in Section 2B that the model actively preserves certain kinds of information such as the input token. The “attention sink” coupling to the first ‘dummy’ token is also identical from layer to layer, but is not a large factor in Fig. 13 as the correlation between the dummy token state vector and other token-resolved state vectors tends to be just ~10%, and largely vanishes in the inter-layer inner product.
 
 <img src="/docs/assets/img/Same_layer_similarity.png" target = "_blank" rel = "noreferrer noopener" alt = "1-layer self similarity" width="500"/>
 
-**Figure 14: Self-similarity of token outputs in the same layer.** Average of normalized inner products between token outputs of the same layer. “Layer #0” represents the encoded input tokens prior to the first transformer layer. 
+**Figure 14: Similarity of state vectors in the same layer.** Average of normalized inner products between state vectors with different token indices within the same layer. “Layer #0” represents the encoded input tokens prior to the first transformer layer. 
 
-Different token outputs of the same layer are also similar (Fig. 14), all the way through the network. Other short prompts (up to ~200 tokens) that I’ve tried yielded essentially identical trends, and even showed some of the same noise-like jitter seen in Fig. 14.
+Different token state vectors of the same layer also look somewhat similar to one another (Fig. 14), all the way through the network. Other short prompts (up to ~200 tokens) that I’ve tried yielded essentially identical trends, and even showed some of the same noise-like jitter seen in Fig. 14.
 
 This is getting long, but one last figure! 
 
@@ -223,7 +223,7 @@ This is getting long, but one last figure!
 
 ***Figure 15: Layer output RMS amplitude and the mean value of RMSNorm scaling parameters.*** 
 
-The amplitude of layer outputs grows throughout most of the network (Fig. 15), and has a striking step anomaly going from the 2nd to 3rd layer.  A first guess would be that growing amplitude will weaken (or break at layer 2-3) the residual connections, but the scaling of transformer input (RMSNorm layer inputs) also grows with depth in the layer, and should counteract some of this effect.  Also, the RMSNorm vector that rescales amplitudes going into the attention block of the first transformer layer are tiny and can even be negative – their interplay with the first two layers warrants a closer look.
+As a final nuance, I want to note that the amplitude of the state vectors isn't constant across the network (Fig. 15).  They tend to grow larger, and there are strikingly large slopes in the first two and last two layers.  A first guess would be that this progressively growing amplitude will weaken (or break at layer 2-3) the residual connections, but the scaling of transformer input (RMSNorm layer inputs) also grows with depth in the layer, and should counteract some of this effect.  Also, the RMSNorm vector that rescales amplitudes going into the attention block of the first transformer layer are tiny and can even be negative – their interplay with the first two layers warrants a closer look.
 
 ### 6. Lessons for LLM architecture
 
