@@ -1,6 +1,6 @@
 ## Visualizing the inner world of a large language model (Llama 2 7B)
 
-Jargon warning!  This post gets very technical, as I'm trying to cover a huge amount of ground.  Some [highlights are outlined here](https://landrewwray.github.io/2023/10/21/LLaMA-2-Surprises.html), and I'll unpack other things in later posts.  It's also a work in progress.  Comments or suggestions are welcome!  For longer messages, you can reach me at lawray.ai@gmail.com.
+This post gets rather technical, as I'm trying to cover a huge amount of ground.  Some [highlights are outlined here](https://landrewwray.github.io/2023/10/21/LLaMA-2-Surprises.html), and I'll unpack other things in later posts.  It's also a living document, so comments and suggestions are welcome!  You can reach me at lawray.ai@gmail.com for longer messages.
 
 Comic courtesy of <a href = "https://www.smbc-comics.com/comic/conscious-6" target = "_blank" rel = "noreferrer noopener">SMBC</a>:  
 <img src="/docs/assets/img/SMBC_LLM_consciousness.png" target = "_blank" rel = "noreferrer noopener" alt = "SMBC Sept. 19 2023" width="500"/>
