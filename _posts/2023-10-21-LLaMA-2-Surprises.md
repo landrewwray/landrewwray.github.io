@@ -26,4 +26,4 @@ stability of non-word information, like continuous representations that it seems
 
 6. A lot of things were only touched on, and will be interesting to look at more in the future.  I spotted some [neat properties](https://landrewwray.github.io/2023/10/19/Inside-LLaMA-2.html#5-what-do-the-layer-outputs-look-like) of the "attention sink" phenomenon from
 <a href = "https://arxiv.org/abs/2309.17453" target = "_blank" rel = "noreferrer noopener">this recent paper</a>.  I'll
-add a post soon with some more about this and the attention mechanism.
+add a post soon \([now linked here!](https://landrewwray.github.io/2023/10/26/Managing-attention.html)\) with some more about this and a broader discussion of the attention mechanism.
