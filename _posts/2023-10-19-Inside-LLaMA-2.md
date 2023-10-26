@@ -65,7 +65,7 @@ So, if that's not how it works, what do the word encodings actually look like?
 
 #### 2.A. Word association in the token encoding vector spaces:
 
-The input and output dictionaries have <a href = "/docs/Llama-2/input-vs-output.html" target = "_blank" rel = "noreferrer noopener">similar structures</a>, by which I mean that token vectors with close meanings tend to be separated by about te same angle in both dictionaries, giving them similar inner products.  Let’s take a closer look at just the input dictionary to get a sense of what these word associations look like:
+The input and output dictionaries have <a href = "/docs/Llama-2/input-vs-output.html" target = "_blank" rel = "noreferrer noopener">similar structures</a>, by which I mean that token vectors with close meanings tend to be separated by about the same angle in both dictionaries, giving them similar inner products.  Let’s take a closer look at just the input dictionary to get a sense of what these word associations look like:
 
 <img src="/docs/assets/img/input-dict-corr-girl.png" target = "_blank" rel = "noreferrer noopener" alt = "Input dict vector correlations" width="800"/>
 
