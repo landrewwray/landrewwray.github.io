@@ -197,7 +197,7 @@ One sees the very similar effects in deeper layers such as layer #25:
 
 **Figure 11: Attention sink effect versus output token in layer #25.**  Other details are as in Fig. 10.
 
-The first sentence is consistently highlighted as seen in Fig. 10-11, but I haven’t spotted any other highlighted sentences in long prompts.  Instructing the AI to assume a new role (to go from an assistant to a lawyer or famous person, etc), doesn’t seem to do it, and nor does telling it that the next sentence will give it a new role.  Artificially adding a second instance of the first “dummy” token later in the prompt creates a second attention sink that gets attention from all later query tokens, but it fails to result in a second highlighted sentence.
+The first sentence is consistently highlighted as seen in Fig. 10-11, but I haven’t spotted any other highlighted sentences in long prompts.  Instructing the AI to assume a new role (to go from an assistant to a lawyer or famous person, etc), doesn’t seem to do it, and nor does telling it that the next sentence will give it a new role.  Artificially adding a second instance of the first “dummy” token later in the prompt creates a second attention sink that gets attention from all later query tokens, but it fails to result in a second highlighted sentence. (NOTE ADDED 10/26/2023: <a href = "https://landrewwray.github.io/2023/10/26/Managing-attention.html" target = "_blank" rel = "noreferrer noopener">this later post</a> adds context to how the 1st sentence is highlighted and what it may mean)
 
 OK, so how about the layer output?  The simplest thing to ask is, how similar is the output of a given layer to the output of the next layer at the same token position? Enter Fig. 12:
 
