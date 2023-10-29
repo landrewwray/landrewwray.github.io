@@ -49,7 +49,7 @@ I’ll devote a short section to each of these topics:
 
 <img src="/docs/assets/img/llama-attn-diagram-1.png" target = "_blank" rel = "noreferrer noopener" alt = "Llama attention diagram" width="500"/>
 
-**Figure 2: A Llama 2 7B attention block.**
+**Figure 2: A Llama 2 7B attention block.** State vectors (#tokens x 4096) are rescaled and slightly recentered by the RMSNorm function. Other steps follow the standard <a href = "https://en.wikipedia.org/wiki/Transformer_(machine_learning_model)#Scaled_dot-product_attention" target = "_blank" rel = "noreferrer noopener">transformer architecture</a>, with red and yellow paths linking processes that occur simultaneously for each attention head. Llama and Llama 2 use <a href = "https://arxiv.org/abs/2104.09864" target = "_blank" rel = "noreferrer noopener">roformer</a> (R matrix) relative positional encoding.  Source code for the model can be <a href = "https://github.com/facebookresearch/llama/blob/main/llama/model.py" target = "_blank" rel = "noreferrer noopener">found here</a>, and the <a href = "https://landrewwray.github.io/2023/10/26/Managing-attention.html" target = "_blank" rel = "noreferrer noopener">attention mechanism is reviewed more closely here</a>.
 
 ### 2. What can we directly decode from internal states of the model?
 
@@ -125,7 +125,7 @@ Here’s what happens when we try to use it…
 
 <img src="/docs/assets/img/middle-I-like.png" target = "_blank" rel = "noreferrer noopener" alt = "Middle dict word amplitudes" width="600"/>
 
-**Figure 7: Reading internal states using the middle dictionary.** The 3rd token position is decode (“like” in “\<s> I **like** the red ball”).
+**Figure 7: Reading internal states using the middle dictionary.** The 3rd token position is decoded (“like” in “\<s> I **like** the red ball”).
 
 Several things stand out:
 1. The middle dictionary has little overlap with the input and output dictionaries, which gives us very weak amplitudes in layers 0 (the input vectors) and 32 (the final state vectors).  This is not an entirely trivial observation – it suggests that the model has opened up an isolated sector of its 4096-dimensional state space.  By "isolated", I mean that it seems like vectors in the middle dictionary do not closely resemble specific vectors in the other dictionaries.
