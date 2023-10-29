@@ -162,7 +162,7 @@ It should also be noted that even though Llama-2 is a language model, the inform
 
 ### 4. How do the parameters of deep and shallow layers differ?
 
-The last Section looked primarily at the very first ('shallowest') transformer layer, as later layers are more difficult to interpret.  The distribution of Wk/Wq/Wv/Wo values is approximately 0-centered, and evolves from a fat-tailed distribution towards a gaussian distribution as one goes deeper into the network.  A great metric to track this trend with is the ratio of standard deviation to the mean amplitude [σ/mean(abs(vect))], which has a value of ~1.25 for a 0-centered gaussian.
+Let's step back from decoding meaning and take a look at the parameter values.  The distribution of Wk/Wq/Wv/Wo values is approximately 0-centered, and evolves from a fat-tailed distribution towards a gaussian distribution as one goes deeper into the network.  A great metric to track this trend with is the ratio of standard deviation to the mean amplitude [σ/mean(abs(vect))], which has a value of ~1.25 for a 0-centered gaussian.
 
 <img src="/docs/assets/img/sigma-over-mean.png" target = "_blank" rel = "noreferrer noopener" alt = "Sigma divided by mean for attention matrices" width="600"/>
 
