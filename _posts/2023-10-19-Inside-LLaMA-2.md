@@ -219,7 +219,7 @@ If we skip forward a few transformer layers, we find that state vector correlati
 
 **Figure 14: Similarity of state vectors in the same layer.** Normalized inner products between (orange) neighboring-token state vectors and (green) next-neighbor vectors are compared with (blue) the average over all non-identical token vector pairs (mean distance of 10.3).  “Layer #0” represents the encoded input tokens prior to the first transformer layer.
 
-Different token state vectors of the same layer also look somewhat similar to one another (Fig. 14), all the way through the network. Other short prompts (up to ~200 tokens) that I’ve tried yielded essentially identical trends, and even showed some of the same noise-like jitter seen in Fig. 14.
+Different token state vectors of the same layer also look somewhat similar to one another all the way through the network (Fig. 14), and similarity is notably higher when token indices differ by <~3. Other short prompts (up to ~200 tokens) that I’ve tried yielded essentially identical trends, and even showed some of the same noise-like jitter seen in Fig. 14.
 
 This is getting long, but one last figure! 
 
