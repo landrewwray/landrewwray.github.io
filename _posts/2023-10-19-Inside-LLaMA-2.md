@@ -176,7 +176,7 @@ The highly non-gaussian distribution seen in the first two layers may suggest th
 
 ### 5. What do the internal states look like?
 
-This section will take a closer look at the attention matrices (32 layers x #tokens x #tokens) and the layer output state vectors (33 layers x #tokens x 4096). Note that even though there are only *32 transformer layers* in the Llama 2 7B model, there are 33 sets of state vectors, as the first set of state vectors ("layer 0") come from the initial token-->vector encoding.  This section will explore structural properties that define how the model functions as an analog computer, in contrast with Section 2B, which looked at information that can be directly decoded from the state vectors.
+This section will take a closer look at the attention matrices (32 layers x #tokens x #tokens) and the layer output state vectors (33 layers x #tokens x 4096). Note that even though there are only *32 transformer layers* in the Llama 2 7B model, there are 33 sets of state vectors, as the first set of state vectors ("layer 0") come from the initial token-->vector encoding.  This section will explore structural properties that define how the model functions as an analog computer, in contrast to Section 2B, which looked at information that can be directly decoded from the state vectors.
 
 #### 5.A. The attention sink: stabilizing the context window
 
