@@ -20,7 +20,9 @@ I’ll devote a short section to each of these topics:
     2.B. [Internal dictionaries of an LLM](#2b-internal-dictionaries-of-an-llm)
 3. [What do the first attention heads look for?](#3-what-words-do-the-attention-heads-look-for)
 4. [How do the parameters of deep and shallow layers differ?](#4-how-do-the-parameters-of-deep-and-shallow-layers-differ)
-5. [What do the layer outputs look like?](#5-what-do-the-layer-outputs-look-like)
+5. [What do the internal states look like?](#5-what-do-the-internal-states-look-like)  
+   5.A. [The attention sink: stabilizing the context window](#5a-the-attention-sink-stabilizing-the-context-window)  
+   5.B. [The state vectors: RAM of an analog computer](#5b-the-state-vectors-ram-of-an-analog-computer)
 6. [Lessons for LLM architecture](#6-lessons-for-llm-architecture)
 7. [Useful links](#7-useful-links)
 
@@ -172,11 +174,13 @@ Parameters in the relatively ‘overloaded’ Wk and Wq matrices have larger dev
 
 The highly non-gaussian distribution seen in the first two layers may suggest that they are subject to more constraints than later layers.  The first two layers significantly transform the state vectors (see Fig. 12 in the next Section), unlike most later layers that appear to enact smaller incremental changes.  One can also note that the first layer needs to interface directly in a lossless way with input that is highly structured and specific on a per-token basis, unlike later layers in which information is distributed across the token-axis of the state vectors (transformer outputs).
 
-### 5. What do the layer outputs look like?
+### 5. What do the internal states look like?
+
+This section will take a closer look at the attention matrices (32 layers x #tokens x #tokens) and the layer output state vectors (33 layers x #tokens x 4096). Note that even though there are only *32 transformer layers* in the Llama 2 7B model, there are 33 sets of state vectors, as the first set of state vectors ("layer 0") come from the initial token-->vector encoding.  This section will explore structural properties that define how the model functions as an analog computer, in contrast with Section 2B, which looked at information that can be directly decoded from the state vectors.
 
 #### 5.A. The attention sink: stabilizing the context window
 
-There’s an infinite amount to say about layer outputs, but I want to kick things off by looking at the attention sink phenomenon identified in this paper [<a href = "https://arxiv.org/abs/2309.17453" target = "_blank" rel = "noreferrer noopener">Xiao et al., Sept. 2023</a>]. They observed that attention connecting back to the first token tends to be extremely strong (>~0.5 out of a max of 1) beyond the first two transformer layers. Here’s the figure from their paper:
+There’s an infinite amount to say about internal states, but I want to kick things off by looking at the attention sink phenomenon identified in this paper [<a href = "https://arxiv.org/abs/2309.17453" target = "_blank" rel = "noreferrer noopener">Xiao et al., Sept. 2023</a>]. They observed that attention connecting back to the first token tends to be extremely strong (>~0.5 out of a max of 1) beyond the first two transformer layers. Here’s the figure from their paper:
 
 ---
    <img src="/docs/assets/img/Attn-sink-paper-fig2.png" target = "_blank" rel = "noreferrer noopener" alt = "Attention sink paper figure" width="850"/>  
