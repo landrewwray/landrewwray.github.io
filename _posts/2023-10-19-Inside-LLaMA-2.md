@@ -174,7 +174,9 @@ The highly non-gaussian distribution seen in the first two layers may suggest th
 
 ### 5. What do the layer outputs look like?
 
-There’s an infinite amount to say about this, but I want to kick things off by looking at the attention sink phenomenon identified in this paper [<a href = "https://arxiv.org/abs/2309.17453" target = "_blank" rel = "noreferrer noopener">Xiao et al., Sept. 2023</a>]. They observed that attention connecting back to the first token tends to be extremely strong (>~0.5 out of a max of 1) beyond the first two transformer layers. Here’s the figure from their paper:
+#### 5.A. The attention sink: stabilizing the context window
+
+There’s an infinite amount to say about layer outputs, but I want to kick things off by looking at the attention sink phenomenon identified in this paper [<a href = "https://arxiv.org/abs/2309.17453" target = "_blank" rel = "noreferrer noopener">Xiao et al., Sept. 2023</a>]. They observed that attention connecting back to the first token tends to be extremely strong (>~0.5 out of a max of 1) beyond the first two transformer layers. Here’s the figure from their paper:
 
 ---
    <img src="/docs/assets/img/Attn-sink-paper-fig2.png" target = "_blank" rel = "noreferrer noopener" alt = "Attention sink paper figure" width="850"/>  
@@ -199,9 +201,13 @@ One sees the very similar effects in deeper layers such as layer #25:
 
 **Figure 11: Attention sink effect versus output token in layer #25.**  Other details are as in Fig. 10.
 
-The first sentence is consistently highlighted as seen in Fig. 10-11, but I haven’t spotted any other highlighted sentences in long prompts.  Instructing the AI to assume a new role (to go from an assistant to a lawyer or famous person, etc), doesn’t seem to do it, and nor does telling it that the next sentence will give it a new role.  Artificially adding a second instance of the first “dummy” token later in the prompt creates a second attention sink that gets attention from all later query tokens, but it fails to result in a second highlighted sentence. (NOTE ADDED 10/26/2023: <a href = "https://landrewwray.github.io/2023/10/26/Managing-attention.html" target = "_blank" rel = "noreferrer noopener">this later post</a> adds context to how the 1st sentence is highlighted and what it may mean)
+The first sentence is consistently highlighted as seen in Fig. 10-11, but I haven’t spotted any other highlighted sentences in long prompts.  Instructing the AI to assume a new role (to go from an assistant to a lawyer or famous person, etc), doesn’t seem to do it, and nor does telling it that the next sentence will give it a new role.  Artificially adding a second instance of the first “dummy” token later in the prompt creates a second attention sink that sharply decreases the attention between all later query/key combinations, but it fails to result in a second highlighted sentence.
 
-OK, so how about the layer output?  The simplest thing to ask is, how similar are the state vectors output by a given layer to the output of the next layer? Enter Fig. 12:
+NOTE ADDED 10/26/2023: <a href = "https://landrewwray.github.io/2023/10/26/Managing-attention.html" target = "_blank" rel = "noreferrer noopener">this later post</a> adds context to how the 1st sentence is highlighted and what it may mean. It turns out that the model has converted the first sentence-ending punctuation into a second kind of attention sink token. The existence of these attention sinks highlights an interesting property of large language models: they have limited tools to manage their state vectors or introduce known vector components. The two attention sink tokens serve this purpose, and my suspicion is that they may be part of a broader internal markup language that helps the model parse text.
+
+#### 5.B. The state vectors: RAM of an analog computer
+
+So, what can we say about the state vectors themselves?  The simplest thing to ask is, how similar are the state vectors output by a given layer to the output of the next layer? Enter Fig. 12:
 
 <img src="/docs/assets/img/self-sim-1.png" target = "_blank" rel = "noreferrer noopener" alt = "1-layer self similarity" width="500"/>
 
