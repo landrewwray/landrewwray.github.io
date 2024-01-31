@@ -44,10 +44,13 @@ Still, size does matter, and larger chatbot models tend to be <a href = "https:/
 
 The current sweet spot for the size of freely downloadable ‘open’ chatbot models (Llama 2, Mistral/Mixtral, etc.) is 7B to 70B parameters, reflecting the limitations of consumer hardware.  Quantization and pruning can compress these models to roughly half that size in bytes (7B parameters = 3.5 GB of memory) before performance loss becomes excessive.  
 
-3\. A quick review of what chatbots do: Architecturally speaking, chatbots have one trick that they use over and over again:
+## 3\. A quick review of what chatbots do
 
- 
-Architecture schematic of the 32-layer Llama 2 7B chatbot model.  A, Black arrows represent the 4096-element ‘state vectors’ that are modified sequentially by each layer.  B, An illustration showing words entered into the chatbot at the bottom of the transformer stack, and next-word predictions at the top of the stack.  I’ve selected single-token words (“BOS You are a helpful assistant”) so that each word corresponds to exactly one set of state vectors.  “BOS” is a dummy token placed at the beginning of all prompts.  Blue arrows illustrate that each transformer has access to the output from all transformers in the previous layer up to its token position: the transformer output F(l,t) at token ‘t’ and layer ‘l’ can be described as a function of the transformer ouputs F(l-1, t’<=t).
+Architecturally speaking, chatbots have one trick that they use over and over again:
+
+<img src="/docs/assets/img/FOT/schematic_Llama2_7B.png" target = "_blank" rel = "noreferrer noopener" alt = "" width="600"/>
+
+**Figure 3: Architecture schematic of the 32-layer Llama 2 7B chatbot model.**  ***A***, *Black arrows represent the 4096-element ‘state vectors’ that are modified sequentially by each layer.*  ***B***, *An illustration showing words entered into the chatbot at the bottom of the transformer stack, and next-word predictions at the top of the stack.  I’ve selected single-token words (“BOS You are a helpful assistant”) so that each word corresponds to exactly one set of state vectors.  “BOS” is a dummy token placed at the beginning of all prompts.  Blue arrows illustrate that each transformer has access to the output from all transformers in the previous layer up to its token position: the transformer output F(l,t) at token ‘t’ and layer ‘l’ can be described as a function of the transformer ouputs F(l-1, t’<=t).*
 
 1.	The text they’re working on is converted into tokens (about 0.75 tokens/word). 
 2.	The model acts on the tokens in order.  First, the current token is converted into a high-dimensional vector (containing dmodel~5000 numbers for current language models).  I’ll refer to this as the “layer 0 state vector”.
@@ -60,4 +63,3 @@ Architecture schematic of the 32-layer Llama 2 7B chatbot model.  A, Black arrow
 In spite of the digital computer hardware that language models are run on, the models themselves are fundamentally analog, consisting of continuous functions acting on continuous variables.  This means that if we want to think about the limits of chatbot cognition, a good starting point is to think of it as an analog computer and parse out its processing capabilities.
 
 In analog computers, information is stored in vectors that hold continuous real number values rather than discrete-valued bits/bytes.  These vectors are acted on by a series of ‘gates’ that transform the vectors via linear and nonlinear mappings.  The weight matrices and activation functions within each transformer layer constitute a collection of gates.
-![image](https://github.com/landrewwray/landrewwray.github.io/assets/106675303/50bd4417-1f54-4f47-bfa8-7afdfcf5890e)
