@@ -40,7 +40,7 @@ Still, size does matter, and larger chatbot models tend to be <a href = "https:/
 
 <img src="/docs/assets/img/FOT/memory_words.png" target = "_blank" rel = "noreferrer noopener" alt = "" width="600"/>
 
-**Figure 2: Estimated number of tokens that can be stored in a state vector for models of different sizes** (method and context here).  The current sweet spot for open models (7B --> 70B parameters) is highlighted.  Model size is assumed to be proportional to the cube of model dimension, as for the GPT 3 and Llama 2 model families.
+**Figure 2: Estimated number of tokens that can be stored in a state vector for models of different sizes** (<a href = "https://landrewwray.github.io/2023/10/19/Inside-LLaMA-2.html#6-lessons-for-llm-architecture" target = "_blank" rel = "noreferrer noopener">method and context here</a>).  *The current sweet spot for open models (7B --> 70B parameters) is highlighted.  Model size is assumed to be proportional to the cube of model dimension, as for the <a href = "https://arxiv.org/abs/2005.14165" target = "_blank" rel = "noreferrer noopener">GPT 3</a> and Llama 2 model families.*
 
 The current sweet spot for the size of freely downloadable ‘open’ chatbot models (Llama 2, Mistral/Mixtral, etc.) is 7B to 70B parameters, reflecting the limitations of consumer hardware.  Quantization and pruning can compress these models to roughly half that size in bytes (7B parameters = 3.5 GB of memory) before performance loss becomes excessive.  
 
