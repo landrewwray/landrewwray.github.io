@@ -24,7 +24,8 @@ The downside is, chatbots have much less of a brain than humans do and often lac
 
 There are numerous examples of well-trained smaller models outperforming larger ones, and it’s quite difficult to draw a line distinguishing model capabilities that are truly emergent with size and out of reach for a small model.  Smaller models are also cheaper to run and can be fundamentally less expensive to train to a given level of performance, so long as you have enough training data and don’t hit a fundamental limit along the way:
 
-docs/assets/img/FOT/Training_dollar_cost.png
+<img src="/docs/assets/img/FOT/Training_dollar_cost.png" target = "_blank" rel = "noreferrer noopener" alt = "" width="500"/>
+
 
 Figure 0: Smaller models can deliver better performance for the same training cost (evaluated here).  Lower numbers are better for prediction accuracy, which is presented as training loss (perplexity, PPL).  Dollar numbers on the vertical axis are estimated and should be a considered as a proxy for computing time (flops).
 
