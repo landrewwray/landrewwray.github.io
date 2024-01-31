@@ -24,7 +24,8 @@ The downside is, chatbots have much less of a brain than humans do and often lac
 
 There are numerous examples of well-trained smaller models outperforming larger ones, and it’s quite difficult to draw a line distinguishing model capabilities that are truly emergent with size and out of reach for a small model.  Smaller models are also cheaper to run and can be fundamentally less expensive to train to a given level of performance, so long as you have enough training data and don’t hit a fundamental limit along the way:
 
- 
+docs/assets/img/FOT/Training_dollar_cost.png
+
 Figure 0: Smaller models can deliver better performance for the same training cost (evaluated here).  Lower numbers are better for prediction accuracy, which is presented as training loss (perplexity, PPL).  Dollar numbers on the vertical axis are estimated and should be a considered as a proxy for computing time (flops).
 
 When GPT-3 first came out, it was a common refrain of op ed pieces that chatbots were still too small to think: the human brain has a factor of ~>1000 more synapses than GPT-3 has model parameters (175 billion model parameters).  This turns out to be a very difficult comparison to really flesh out, not least because biological brains and AI transformer stacks have very different architectures (more on that later in this series!).  However, I think if one frames things more carefully, it actually leads to the opposite conclusion: chatbot model size may be in the right ballpark for human-like cognition.
