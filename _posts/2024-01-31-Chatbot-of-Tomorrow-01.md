@@ -4,15 +4,15 @@ It’s been said that 2023 was the year of the chatbot, which is like saying tha
 
 The basic framework of transformer neural networks was <a href = "https://arxiv.org/abs/1706.03762" target = "_blank" rel = "noreferrer noopener">introduced in 2017</a>, and is at the heart of the new generation of AI tools that have taken the world by storm.  Transformers are behind language models like ChatGPT and have been broadly implemented for other modalities such as image generation and speech recognition. (think DALL-E and Whisper)  Just over a month ago, the (admittedly doctored) <a href = "https://www.youtube.com/watch?v=UIZAiXYceBI&t=5s" target = "_blank" rel = "noreferrer noopener">demo video for Gemini Ultra</a> blew people away as a demonstration of human-like audiovisual processing and cognition from a “natively multimodal” model.
 
-1\. So what’s wrong with the status quo?  Despite the recent chain of breakthroughs, there’s reasonable doubt as to just how powerful transformer-based models can be, and whether they truly present a path to human-like intelligence.  Chatbots are frequently characterized as “stochastic parrots” that patch phrases together without really understanding what they mean.  A number of academic papers have attempted rigorous formulations of this question, and sentiments have been evolving over the last year.  For example:
+1\. So what’s wrong with the status quo?  Despite the recent chain of breakthroughs, there’s reasonable doubt as to just how powerful transformer-based models can be, and whether they truly present a path to human-like intelligence.  Chatbots are frequently characterized as <a href = "https://commons.wikimedia.org/wiki/File:On_the_Dangers_of_Stochastic_Parrots_Can_Language_Models_Be_Too_Big.pdf" target = "_blank" rel = "noreferrer noopener">“stochastic parrots”</a> that patch phrases together without really understanding what they mean.  A number of academic papers have attempted rigorous formulations of this question, and sentiments have been evolving over the last year.  For example:
 
-Oct. 2022, Saparov et al.: “LLMs are quite capable of making correct individual deduction steps, and so are generally capable of reasoning, even in fictional contexts.” 
+Oct. 2022, <a href = "https://arxiv.org/abs/2210.01240" target = "_blank" rel = "noreferrer noopener">Saparov et al.</a>: “LLMs are quite capable of making correct individual deduction steps, and so are generally capable of reasoning, even in fictional contexts.” 
 
-Dec. 2022, Webb et al.: “large language models such as GPT-3 have acquired an emergent ability to find zero-shot solutions to a broad range of analogy problems.” 
+Dec. 2022, <a href = "https://arxiv.org/abs/2212.09196" target = "_blank" rel = "noreferrer noopener">Webb et al.</a>: “large language models such as GPT-3 have acquired an emergent ability to find zero-shot solutions to a broad range of analogy problems.” 
 
-Sept. 2023, Lu et al.: “We find no evidence for the emergence of reasoning abilities [within LLMs]” 
- 
-Jan. 2024, Gendron et al.: “Our results indicate that Large Language Models do not yet have the ability to perform sound abstract reasoning … the tuning techniques that improved LLM reasoning abilities do not provide significant help for abstract reasoning.” 
+Sept. 2023, <a href = "https://arxiv.org/abs/2309.01809" target = "_blank" rel = "noreferrer noopener">Lu et al.</a>: “We find no evidence for the emergence of reasoning abilities \[within LLMs]” 
+
+Jan. 2024, <a href = "https://arxiv.org/abs/2305.19555" target = "_blank" rel = "noreferrer noopener">Gendron et al.</a>: “Our results indicate that Large Language Models do not yet have the ability to perform sound abstract reasoning … the tuning techniques that improved LLM reasoning abilities do not provide significant help for abstract reasoning.” 
 
 The kicker is that these papers don’t even disagree with one another – they present experimental results addressing highly nuanced questions.  Chatbots have fundamentally different cognitive hardware and software than humans do, which means that they may not apply the skill set you expect when tackling a familiar problem.  
 
