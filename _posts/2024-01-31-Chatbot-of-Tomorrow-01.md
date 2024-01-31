@@ -4,7 +4,9 @@ It’s been said that 2023 was the year of the chatbot, which is like saying tha
 
 The basic framework of transformer neural networks was <a href = "https://arxiv.org/abs/1706.03762" target = "_blank" rel = "noreferrer noopener">introduced in 2017</a>, and is at the heart of the new generation of AI tools that have taken the world by storm.  Transformers are behind language models like ChatGPT and have been broadly implemented for other modalities such as image generation and speech recognition. (think DALL-E and Whisper)  Just over a month ago, the (admittedly doctored) <a href = "https://www.youtube.com/watch?v=UIZAiXYceBI&t=5s" target = "_blank" rel = "noreferrer noopener">demo video for Gemini Ultra</a> blew people away as a demonstration of human-like audiovisual processing and cognition from a “natively multimodal” model.
 
-1\. So what’s wrong with the status quo?  Despite the recent chain of breakthroughs, there’s reasonable doubt as to just how powerful transformer-based models can be, and whether they truly present a path to human-like intelligence.  Chatbots are frequently characterized as <a href = "https://commons.wikimedia.org/wiki/File:On_the_Dangers_of_Stochastic_Parrots_Can_Language_Models_Be_Too_Big.pdf" target = "_blank" rel = "noreferrer noopener">“stochastic parrots”</a> that patch phrases together without really understanding what they mean.  A number of academic papers have attempted rigorous formulations of this question, and sentiments have been evolving over the last year.  For example:
+##1\. So what’s wrong with the status quo?
+
+Despite the recent chain of breakthroughs, there’s reasonable doubt as to just how powerful transformer-based models can be, and whether they truly present a path to human-like intelligence.  Chatbots are frequently characterized as <a href = "https://commons.wikimedia.org/wiki/File:On_the_Dangers_of_Stochastic_Parrots_Can_Language_Models_Be_Too_Big.pdf" target = "_blank" rel = "noreferrer noopener">“stochastic parrots”</a> that patch phrases together without really understanding what they mean.  A number of academic papers have attempted rigorous formulations of this question, and sentiments have been evolving over the last year.  For example:
 
 Oct. 2022, <a href = "https://arxiv.org/abs/2210.01240" target = "_blank" rel = "noreferrer noopener">Saparov et al.</a>: “LLMs are quite capable of making correct individual deduction steps, and so are generally capable of reasoning, even in fictional contexts.” 
 
@@ -20,7 +22,9 @@ In particular, chatbots lean heavily on pattern matching.  One might expect this
 
 The downside is, chatbots have much less of a brain than humans do and often lack an internal model of the systems that they talk about.  For example, if you try to play chess with a chatbot by typing in your moves, it tends to respond with a mishmash of brilliant and nonsensical play.  It can reproduce moves from games that it was trained on but does not understand the layout of the chessboard – information best represented graphically – and so has no way to deal with novel positions.
 
-2\. Bigger models are no longer the answer.  Well, not the whole answer.  As OpenAI CEO Sam Altman said in April, 2023, “I think we're at the end of the era where it's going to be these, like, giant, giant models, and we'll make them better in other ways.”
+##2\. Bigger models are no longer the answer.
+
+Well, not the whole answer.  As OpenAI CEO Sam Altman said in April, 2023, “I think we're at the end of the era where it's going to be these, like, giant, giant models, and we'll make them better in other ways.”
 
 There are numerous examples of well-trained smaller models outperforming larger ones, and it’s quite difficult to draw a line distinguishing model capabilities that are truly emergent with size and out of reach for a small model.  Smaller models are also cheaper to run and can be fundamentally less expensive to train to a given level of performance, so long as you have enough training data and don’t hit a fundamental limit along the way:
 
