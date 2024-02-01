@@ -2,6 +2,9 @@
 
 The <a href = "https://landrewwray.github.io/2024/01/31/Chatbot-of-Tomorrow-01.html" target = "_blank" rel = "noreferrer noopener">last post</a> looked at how chatbots work, as well as some of their strengths and weaknesses.  This post will list out key examples of how their limitations stem from architectural choices.  The goal is not so much to be comprehensive, but rather to quickly illustrate key motivations behind the incoming generation of design innovations -- which will be the subject of the next and final post in this 3-part series.
 
+<img src="/docs/assets/img/FOT/LEGO_all_you_need.jpeg" target = "_blank" rel = "noreferrer noopener" alt = "SMBC Sept. 19 2023" width="500"/>
+*Image from DALL·E 3*
+
 **1\.	Each token (word part) gets the same amount of ‘thought’.**  If you ask a 50-layer model for a single-token answer to a question, it must come up with the answer within a single sweep through those 50 layers (or while reading your question).  It cannot pause to think more about the problem.  
 
 **2\.	Tokens are overloaded as RAM.**  This point sounds like the previous one, but there are important distinctions.  The state vector is the same length for each token and helps define the number of truly intelligible ‘words’ that can be encoded at one time.  For example, there’s an estimated limit of <a href = "https://landrewwray.github.io/2023/10/19/Inside-LLaMA-2.html#6-lessons-for-llm-architecture" target = "_blank" rel = "noreferrer noopener">~200 in-memory words</a> within a 4096-long state vector of Llama 2 7B.  For a chatbot to adopt a human-like approach to thinking about chess positions would require that it memorize the current state of the chessboard (around 84 words in an uncompressed representation) as well as possible future positions, which might constitute a significant memory bottleneck.
