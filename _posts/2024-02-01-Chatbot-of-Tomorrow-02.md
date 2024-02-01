@@ -2,8 +2,8 @@
 
 The <a href = "https://landrewwray.github.io/2024/01/31/Chatbot-of-Tomorrow-01.html" target = "_blank" rel = "noreferrer noopener">last post</a> looked at how chatbots work, as well as some of their strengths and weaknesses.  This post will list out key examples of how their limitations stem from architectural choices.  The goal is not so much to be comprehensive, but rather to quickly illustrate key motivations behind the incoming generation of design innovations -- which will be the subject of the next and final post in this 3-part series.
 
+*Image courtesy of DALL·E 3*
 <img src="/docs/assets/img/FOT/LEGO_all_you_need.jpeg" target = "_blank" rel = "noreferrer noopener" alt = "SMBC Sept. 19 2023" width="500"/>
-*Image from DALL·E 3*
 
 **1\.	Each token (word part) gets the same amount of ‘thought’.**  If you ask a 50-layer model for a single-token answer to a question, it must come up with the answer within a single sweep through those 50 layers (or while reading your question).  It cannot pause to think more about the problem.  
 
