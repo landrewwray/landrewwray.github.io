@@ -1,0 +1,19 @@
+# Chatbot Architecture of Tomorrow – (2) Limits of Chatbot Cognition
+
+The last post looked at how chatbots work and what they can and can’t do.  This post will list out some of the architectural factors that define their limitations, as a lead-in to the next post which will look at recent innovations addressing these issues and next steps that are visible on the horizon.
+
+**0\.	Each token (word part) gets the same amount of ‘thought’.**  If you ask a 50-layer model for a single-token answer to a question, it must come up with the answer within a single sweep through those 50 layers (or while reading your question).  It cannot pause to think more about the problem.  
+
+**1\.	Tokens are overloaded as RAM.**  This point sounds like the previous one, but there are important distinctions.  The state vector is the same length for each token and helps define the number of truly intelligible ‘words’ that can be encoded at one time.  For example, there’s an estimated limit of ~200 in-memory words within a 4096-long state vector of Llama 2 7B.  For a chatbot to adopt a human-like approach to thinking about chess positions would require that it memorize the current state of the chessboard (around 84 words in an uncompressed representation) as well as possible future positions, which might constitute a significant memory bottleneck.
+
+The per-token allocation of state vectors is a great architectural innovation as far as keeping the model simple and on-task, but it’s also probably the most counterintuitive aspect of how current LLMs process information.
+
+**2\.	Models have no long-term memory.**  The information from each conversation is lost at the start of the next conversation, and the model will only recall information accurately up to a certain prompt length.
+
+**3\.	Attention layers function as pattern matching tools** and can prime the model for new pattern matching tasks defined in the prompt.  This is great if you want to retrieve and organize information, or to predict the next value in a sequence of numbers, but it’s not necessarily what one wants as a basis of abstract thought.
+
+**4\.	Chatbots are required to overthink things.**  The initial training of chatbots tends to focus on minimizing a metric called ‘perplexity’.  To satisfy this, the chatbot needs to create a list of the possible next tokens (word-parts) and assign them accurate probabilities based on the text the model is trained on [answer1, probability1; answer2, probability2; …].  So, if the prompt is an equation like “1 + (-1) = ”, the correct answer is “0”, but optimal output for the chatbot might be something like [“0”, 65%; “2”, 20%; “?”, 5%; …], based on the frequency with which similar correct and incorrect answers show up in training data scraped from the internet.  This creates a tendency to look at problems from every possible angle at the same time, rather than coherently following a single train of thought.
+
+**5\.	Chatbots will face regulatory scrutiny** (policy architecture!).  Human-like AI is the Godzilla of disruptive innovation.  For all the potential that chatbot-powered tools have to improve our lives, they are also a profound shock to the job market.  A recent survey at Davos suggested that ~2% (more than 0.25*0.05) of jobs could be cut in 2024 due to AI.  The next five years may see a tumultuous evolution of AI related rights and regulations featuring organized labor protests, capital supported counter-movements, and a struggle for the soul of the pro-equity movement – all colored by political flag-raising, international jockeying, and the evergreen angles of national security.
+
+Energy consumption is also a concern.  Chatbots are the ultimate ‘high level programming language’ – a software tool that goes to the extreme in sacrificing computational efficiency for versatility.  Their broader incorporation in day-to-day life, from search engines to virtual assistants, may greatly increase global energy consumption.
