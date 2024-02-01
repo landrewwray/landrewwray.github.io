@@ -1,4 +1,4 @@
-# Chatbot Architecture of Tomorrow – (2) Limits of Chatbot Cognition
+# The Chatbot Architecture of Tomorrow – (2) Limits of Chatbot Cognition
 
 The last post looked at how chatbots work and what they can and can’t do.  This post will list out some of the architectural factors that define their limitations, as a lead-in to the next post which will look at recent innovations addressing these issues and next steps that are visible on the horizon.
 
