@@ -1,6 +1,6 @@
 # The Chatbot Architecture of Tomorrow – (3) What Are the Solutions?
 
-This is where it’s all been headed!  For each issue posed in the [last post][https://landrewwray.github.io/2024/02/01/Chatbot-of-Tomorrow-02.html], I’ll touch on “standard” solutions that are already in widespread use, feasible-but-risky “adventurous” approaches, and “radical” approaches that would be much more drastic to implement.
+This is where it’s all been headed!  For each issue posed in the [last post](https://landrewwray.github.io/2024/02/01/Chatbot-of-Tomorrow-02.html), I’ll touch on “standard” solutions that are already in widespread use, feasible-but-risky “adventurous” approaches, and “radical” approaches that would be much more drastic to implement.
 
 0.	Each token (word part) gets the same amount of ‘thought’.  
 
