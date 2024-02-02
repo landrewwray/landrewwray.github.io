@@ -2,7 +2,7 @@
 
 This is where it’s all been headed!  For each issue posed in the [last post](https://landrewwray.github.io/2024/02/01/Chatbot-of-Tomorrow-02.html), I’ll touch on “standard” solutions that are already in widespread use, feasible-but-risky “adventurous” approaches, and “radical” approaches that would be much more drastic to implement.
 
-0.	Each token (word part) gets the same amount of ‘thought’.  
+## 1\. Each token (word part) gets the same amount of ‘thought’.  
 
 Standard: A popular approach is to ask the model to express its reasoning in writing.  This technique is termed chain of thought (CoT), and there’s a wide body of literature around it.  Chatbots aren’t intrinsically great at this kind of task, and smaller models do particularly poorly, but performance can be improved via fine tuning.  
 
@@ -15,7 +15,7 @@ An even less intrusive intervention would be to give the model the capability to
  
 Architecture schematic with a ‘thinking token’.  Words proposed by the model are shown at the top of panel (B).  As the model is reading a user-provided prompt, only the [think] token is entered into the input text stream, where it results in the insertion of an extra set of state vectors.
 
-1.	Tokens are overloaded as RAM.  
+## 2\. Tokens are overloaded as RAM.  
 
 Standard:  Chatbots have a range of emergent tricks for making the most out of the state vectors they’re allocated, such as loading frequently referenced constants and (it appears) sentence summaries into the hidden state vectors of punctuation tokens, such as periods.  The distinctive ML-identified prompts that optimize CoT performance for specific models probably interact constructively with this form of memory management.
 
@@ -23,7 +23,7 @@ Adventurous:  One could potentially try to augment this by adding a special ‘t
 
 Radical:  It would be easy to add extra sets LSTM-like memory states that are passed forward along the token axis and communicate with selected transformer layers within the chatbot model.  Plausible designs in this broader class have been explored, so there are probably good reasons that we’re not seeing them incorporated in the latest open models.
 
-2.	Models have no long-term memory.  
+## 3\. Models have no long-term memory.  
 
 Standard: The default answer to this is to apply some form of retrieval augmented generation (RAG), which amounts to giving the model access to a search engine.  One can also train the model on content that you want it to ‘memorize’, but this opens up several cans of worms, and tends to be a better fit for skill and alignment training than knowledge acquisition.  It’s common to liken RAG to single-step fine tuning within the literature, but the two are not the same – for example, in context learning does not suffer from the reversal curse.
 
@@ -41,7 +41,7 @@ A model with this capability would have a different relationship with its traini
 
  
 
-3.	Attention layers are pattern matching tools: 
+## 4\. Attention layers are pattern matching tools: 
 
 Standard:  The obvious band-aid is fine tuning.  All current chatbots receive specialized training on data sets that promote cognitive skills such as attention span (see Llama 2 ‘ghost attention’) and domain-specific chain of thought reasoning.  However, the degree to which this ‘reasoning’ proficiency transfers between domains can be limited.
 
@@ -51,7 +51,7 @@ Adventurous: Multi-agent systems (MAS) are a hot topic in AI and have the potent
 
 Radical: If feedforward sublayers provide a part of the solution, then there are endless ways to expand them, expand their connectivity within the transformer stack, or to couple in auxiliary neural networks – akin to the reciprocal synaptic connections between different areas in the human brain.  Of course, most approaches of this sort would violate the architectural principle of simplicity that has dominated transformer-based AI development.
 
-4.	Chatbots are required to overthink things.  
+## 5\. Chatbots are required to overthink things.  
 
 Standard: A single solution can often address multiple problems.  Once again,
 training is the main way to address this issue, including reinforcement learning with human feedback (RLHF).  Ensuring that questions in the training data are answered correctly and use well-constructed chains of thought (CoT) also helps keep the model focused on the right things.  Nonetheless, it’s very challenging to align chatbots with human goals.
@@ -60,7 +60,7 @@ training is the main way to address this issue, including reinforcement learning
 
 Crazy: A model that experiences its own creative process, as discussed in point 2 above.
 
-5.	Chatbots pose profound challenges to the wellbeing of humans and will face regulatory scrutiny.  
+## 6\. Chatbots pose profound challenges to the wellbeing of humans and will face regulatory scrutiny.  
 
 This series is focused on the technical side of things, so I will not try to do justice to AI policy.  We’re already seeing the shadow of AI in union contract negotiations and laws that regulate the use and capabilities of AI.  I’m sure this is just the beginning, and I’m just as sure that, to some extent, the genie is out of the bottle.
 
