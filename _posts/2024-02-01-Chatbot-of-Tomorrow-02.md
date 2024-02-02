@@ -2,7 +2,7 @@
 
 <img src="/docs/assets/img/FOT/LEGO_all_you_need.jpeg" target = "_blank" rel = "noreferrer noopener" alt = "SMBC Sept. 19 2023" width="350"/>
 
-*Is a simple tower of transformer blocks really the best answer?  Image courtesy of DALL·E 3*
+*Is a simple tower of transformer blocks really the best answer?  Image created with DALL·E 3.*
 
 The <a href = "https://landrewwray.github.io/2024/01/31/Chatbot-of-Tomorrow-01.html" target = "_blank" rel = "noreferrer noopener">last post</a> looked at how chatbots work, as well as some of their strengths and weaknesses.  This post will list out key examples of how their limitations stem from architectural choices.  The goal is not to be comprehensive, but rather to quickly illustrate key motivations behind the incoming generation of design innovations -- which will be the subject of the next and final post in this 3-part series.
 
