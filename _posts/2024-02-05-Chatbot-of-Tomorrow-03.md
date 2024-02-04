@@ -67,7 +67,6 @@ At an architectural level, if the attention sublayer is a poor basis for ‘cogn
 ## 6\.	Chatbots are energy-inefficient problem solvers.
 
 **Standard**: There’s a lot of room to distill (or otherwise engineer) capabilities of larger models into much smaller models, such as for translation, simple conversation, or navigating app interfaces.  The Rabbit R1 seems to lead the pack in this regard, and squeezes a wide range of multimodal AI capabilities into a $200 package with far too little computing power to run a top-of-the-line language model.
-![image](https://github.com/landrewwray/landrewwray.github.io/assets/106675303/63d729b8-16ff-4395-ae55-b831d5920dab)
 
 **Adventurous**: If emulating chatbots on digital computing devices is too expensive, how about creating ***analog*** computers that can run your AI natively?!  As it happens, there’s an entire field of engineering devoted to the exploration of these ‘neuromorphic’ analog computing technologies, and I’ve seen a number of fascinating approaches to the problem over the years.  The stakes motivating this class of innovation are higher than ever, and companies like LightMatter will be fascinating to follow over the coming decade.
 
