@@ -18,7 +18,7 @@ An even less intrusive intervention would be to give the model the capability to
 
 <img src="/docs/assets/img/FOT/thinking_token.png" target = "_blank" rel = "noreferrer noopener" alt = "" width="600"/>
 
-**Architecture schematic with a ‘thinking token’**.  *Words proposed by the model are shown at the top of panel (B).  As the model is reading a user-provided prompt, only the [think] token is entered into the input text stream, where it results in the insertion of an extra set of state vectors.*
+**Architecture schematic with a ‘thinking token’**.  *Words proposed by the model are shown at the top of panel (B).  As the model is reading a user-provided prompt, only the [think] token is entered into the input text stream, where it results in the creation of an extra set of state vectors.*
 
 ## 2\. Tokens are overloaded as RAM.  
 
@@ -44,7 +44,7 @@ Having a fluid exchange between long and short term memory also frees the brain 
 
 A model with this capability would have a different relationship with its training data.  In context learning involves kinds of free association that standard model training does not – for example, it does not suffer from the reversal curse.  An optimistic take is that such a model might require far less training data, akin to human learning which tends to be based on few examples.  We can thank SMBC for a less optimistic interpretation of this particular gedanken experiment:
 
- 
+<img src="/docs/assets/img/FOT/Premature consciousness.png" target = "_blank" rel = "noreferrer noopener" alt = "" width="500"/>
 
 ## 4\. Attention layers are pattern matching tools: 
 
