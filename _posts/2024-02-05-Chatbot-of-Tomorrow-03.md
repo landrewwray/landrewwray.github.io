@@ -16,7 +16,7 @@ This is where it’s all been headed!  For each issue highlighted in the [last p
 
 An even less intrusive intervention would be to give the model the capability to output a new class of padding token that I’ll term a ‘thinking token’.  Thinking tokens would exist purely to allow the model to allocate an additional set of state vectors, and would not be considered in perplexity calculations so long as the model used them infrequently (say, <10% frequency):
 
-<img src="/docs/assets/img/FOT/thinking_token.png" target = "_blank" rel = "noreferrer noopener" alt = "" width="500"/>
+<img src="/docs/assets/img/FOT/thinking_token.png" target = "_blank" rel = "noreferrer noopener" alt = "" width="600"/>
 
 **Architecture schematic with a ‘thinking token’**.  *Words proposed by the model are shown at the top of panel (B).  As the model is reading a user-provided prompt, only the [think] token is entered into the input text stream, where it results in the insertion of an extra set of state vectors.*
 
