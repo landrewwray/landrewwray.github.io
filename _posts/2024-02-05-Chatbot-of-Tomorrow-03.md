@@ -58,20 +58,24 @@ At an architectural level, if the attention sublayer is a poor basis for ‘cogn
 
 ## 5\. Chatbots are required to overthink things.  
 
+**Standard**: Once again, training is the main way to address this issue, including reinforcement learning with human feedback (RLHF).  Ensuring that questions in the training data are <a href = "https://arxiv.org/abs/2306.11644" target = "_blank" rel = "noreferrer noopener">answered correctly</a> and use well-constructed chains of thought (CoT) also helps keep the model focused on the right things.  Nonetheless, it’s <a href = "https://arxiv.org/abs/2307.15217" target = "_blank" rel = "noreferrer noopener">very challenging to align chatbots with human goals</a>.
 
-**Standard**: A single solution can often address multiple problems.  Once again, training is the main way to address this issue, including reinforcement learning with human feedback (RLHF).  Ensuring that questions in the training data are <a href = "https://arxiv.org/abs/2306.11644" target = "_blank" rel = "noreferrer noopener">answered correctly</a> and use well-constructed chains of thought (CoT) also helps keep the model focused on the right things.  Nonetheless, it’s <a href = "https://arxiv.org/abs/2307.15217" target = "_blank" rel = "noreferrer noopener">very challenging to align chatbots with human goals</a>.
+**Adventurous**: One can train models to navigate mind maps (graph of thought, GoT), as noted in item #1 above.  Framing a problem in terms of a mind map can force a chatbot to focus more closely on one line of reasoning at a time.
 
-**Adventurous**: One can train models to navigate mind maps, as in point 1 above. In this scenario, the mind map provides 
+**Radical**: If you want a chatbot can think in an organized way, the best human-inspired approach may be to have it remember and consciously develop its own creative process, as considered in the "radical" section of item #3 above.
 
-**Radical**: A model that experiences its own creative process, as discussed in point 3 above.
+## 6\.	Chatbots are energy-inefficient problem solvers.
 
-## 6\. Chatbots pose profound challenges to the wellbeing of humans and will face regulatory scrutiny.  
-
-This series is focused on the technical side of things, so I will not try to do justice to AI policy.  We’re already seeing the shadow of AI in union contract negotiations and laws that regulate the use and capabilities of AI.  I’m sure this is just the beginning, and I’m just as sure that, to some extent, the genie is out of the bottle.
-
-On the energy front: Sam Altman has recently drawn attention towards fusion power as a potential solution, thanks to exciting breakthroughs over the last decade that seem poised to allow stable fusion power generation to be achieved in the next few years.  The world could really use a new clean and abundant power source, but it will probably take a while to see where the current technological push can really get us as far as the stability, maintenance costs, and overall practicality of fusion power facilities.  For example, quenches (sudden failures) of the superconducting magnet that contains a fusion reaction can release energy comparable to 1000 kg of TNT and may be difficult to avoid due to progressive radiation damage.
-
-A more AI-specific solution to the energy challenge would be to create analog computers rather than emulating AI on digital computing devices.  I’ve seen a lot of fascinating approaches to this over the years, and in fact, there’s an entire field of engineering devoted to the exploration of these ‘neuromorphic’ technologies.
-
-Even without neuromorphics, there’s a lot of room to distill (or otherwise create) capabilities of larger models into much smaller models, such as for translation, simple conversation, or navigating app interfaces.  The Rabbit R1 seems to lead the pack in this regard, and squeezes a wide range of multimodal AI capabilities into a $200 package with far too little computing power to run a top-of-the-line language model.
+**Standard**: There’s a lot of room to distill (or otherwise engineer) capabilities of larger models into much smaller models, such as for translation, simple conversation, or navigating app interfaces.  The Rabbit R1 seems to lead the pack in this regard, and squeezes a wide range of multimodal AI capabilities into a $200 package with far too little computing power to run a top-of-the-line language model.
 ![image](https://github.com/landrewwray/landrewwray.github.io/assets/106675303/63d729b8-16ff-4395-ae55-b831d5920dab)
+
+**Adventurous**: If emulating chatbots on digital computing devices is too expensive, how about creating ***analog*** computers that can run your AI natively?!  As it happens, there’s an entire field of engineering devoted to the exploration of these ‘neuromorphic’ analog computing technologies, and I’ve seen a number of fascinating approaches to the problem over the years.  The stakes motivating this class of innovation are higher than ever, and companies like LightMatter will be fascinating to follow over the coming decade.
+
+https://lightmatter.co/
+https://www.datacenterdynamics.com/en/news/global-data-center-electricity-use-to-double-by-2026-report/
+
+**Radical**: Sam Altman and others have recently drawn attention towards fusion power as a potential mitigating factor.  Exciting breakthroughs over the last decade seem poised to allow stable fusion power generation to be achieved in the next few years.  The world could really use a new clean and abundant power source, but it will probably take a while to see where the current technological push can really get us as far as the stability, maintenance costs, and overall practicality of fusion power facilities.  For example, quenches (sudden failures) of the superconducting magnet that contains a fusion reaction can release energy comparable to 1000 kg of TNT and may be difficult to avoid due to progressive radiation damage.
+
+## 7\. Chatbots will face regulatory scrutiny. (policy architecture!)
+
+This series of posts is focused on the technical side of things, so I won't try to do justice to AI policy.  (Maybe some other time?  I'd love to exchange thoughts in person!)  We’re already seeing the shadow of AI in union contract negotiations and laws that regulate the use and capabilities of AI.  I’m sure this is just the beginning, and I’m just as sure that, to some extent, the genie is out of the bottle.
