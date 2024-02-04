@@ -1,6 +1,6 @@
 # The Chatbot Architecture of Tomorrow – (3) What Are the Solutions?
 
-<img src="/docs/assets/img/FOT/Blind elephant 02.jpeg" target = "_blank" rel = "noreferrer noopener" alt = "" width="500"/>
+<img src="/docs/assets/img/FOT/Blind elephant 02.jpeg" target = "_blank" rel = "noreferrer noopener" alt = "" width="400"/>
 
 *"I'm thinking serpentine robot; we go all in on hypermobility."  The parable of blind men cybernetically upgrading an elephant.  Image created with DALL·E 3.*
 
