@@ -2,7 +2,7 @@
 
 <img src="/docs/assets/img/FOT/Blind elephant 02.jpeg" target = "_blank" rel = "noreferrer noopener" alt = "" width="400"/>
 
-*"I'm thinking serpentine robot; we go all in on hypermobility." -Blind men cybernetically upgrading an elephant (Image created with DALL·E 3)*
+*"I'm thinking serpentine robot; we go all in on hypermobility." -Blind men cybernetically enhancing an elephant (Image created with DALL·E 3)*
 
 This is where it’s all been headed!  For each issue highlighted in the [last post](https://landrewwray.github.io/2024/02/01/Chatbot-of-Tomorrow-02.html), I’ll touch on “**standard**” solutions that are already in widespread use, feasible-but-risky “**adventurous**” approaches, and “**radical**” approaches that would be much more drastic to implement.
 
