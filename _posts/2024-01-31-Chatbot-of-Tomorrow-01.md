@@ -1,6 +1,6 @@
 # The Chatbot Architecture of Tomorrow – (1) Setting the Stage
 
-<img src="/docs/assets/img/FOT/Ice_palace_02.jpeg" target = "_blank" rel = "noreferrer noopener" alt = "" width="800"/>
+<img src="/docs/assets/img/FOT/Ice_palace_02.jpeg" target = "_blank" rel = "noreferrer noopener" alt = "" width="400"/>
 
 *Isn't this one something?  The theme here is transcending boundaries: It's indoor-outdoor living.  It's cutting-edge design with the tranquility of nature.  What, the cold? Oh, no. No, the cold's never bothered me.  (Image created with DALL·E 3)*
 
