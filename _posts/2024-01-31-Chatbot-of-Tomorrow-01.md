@@ -4,11 +4,6 @@
 
 *Isn't this one something?  The theme here is transcending boundaries.  It's indoor-outdoor living.  It's cutting-edge design with the tranquility of nature.  What, the cold?  Oh, no.  The cold's never bothered* ***me,*** *anyway.  (Image created with DALL·E 3)*
 
-| <img src="/docs/assets/img/FOT/Ice_palace_02b.jpg" target = "_blank" rel = "noreferrer noopener" alt = "" width="400"/> | 
-|:--:| 
-| *Isn't this one something?  The theme here is transcending boundaries.  It's indoor-outdoor living.  It's cutting-edge design with the tranquility of nature.  What, the cold?  Oh, no.  The cold's never bothered* ***me,*** *anyway.  (Image created with DALL·E 3)* |
-
-
 It’s been said that 2023 was the year of the chatbot, which is like saying that 1984 was the year of the personal computer and 1989 was the year of the internet.  More is obviously on the way, but what will it look like?  This is the start of a 3-part series of posts that will lean heavily on the academic literature to assess where things are, where they’re going, and what it may take to overcome current limitations on the reasoning ability of chatbots.
 
 The basic framework of transformer neural networks was <a href = "https://arxiv.org/abs/1706.03762" target = "_blank" rel = "noreferrer noopener">introduced in 2017</a>, and is at the heart of the new generation of AI tools that have taken the world by storm.  Transformers are behind language models like ChatGPT and have been broadly implemented for other modalities such as image generation and speech recognition. (think DALL-E and Whisper)  Just over a month ago, the (admittedly doctored) <a href = "https://www.youtube.com/watch?v=UIZAiXYceBI&t=5s" target = "_blank" rel = "noreferrer noopener">demo video for Gemini Ultra</a> blew people away as a demonstration of human-like audiovisual processing and cognition from a “natively multimodal” model.
