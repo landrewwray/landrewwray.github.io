@@ -8,23 +8,23 @@ This is where it’s all been headed!  For each issue highlighted in the [last p
 
 ## 1\. Each token (word part) gets the same amount of ‘thought’.  
 
-**Standard**: A popular approach is to ask the model to express its reasoning in writing.  This technique is termed chain of thought (CoT), and there’s a wide body of literature around it.  Chatbots aren’t intrinsically great at this kind of task, and smaller models do particularly poorly, but performance can be <a href = "https://arxiv.org/abs/2305.14045" target = "_blank" rel = "noreferrer noopener">improved via fine tuning</a>.  
+**Standard**: A popular tactic is to ask the model to express its reasoning in writing.  This technique is termed chain of thought (CoT), and there’s a wide body of literature around it.  Chatbots aren’t intrinsically great at this kind of task, and smaller models do particularly poorly, but performance can be <a href = "https://arxiv.org/abs/2305.14045" target = "_blank" rel = "noreferrer noopener">improved via fine tuning</a>.  
 
 **Adventurous**: A number of innovative approaches can be found in the literature addressing a broader class of CoT-like solutions, collectively termed “<a href = "https://arxiv.org/abs/2308.09687" target = "_blank" rel = "noreferrer noopener">graph of thought</a>” (GoT).  As the name evokes, these approaches can allow models to create and traverse mind map bubble diagrams.
 
 **Radical**: A key difference between artificial and biological neural networks is that biological neural networks do not shy away from <a href = "https://www.biorxiv.org/content/10.1101/2023.07.29.551086v1.full.pdf" target = "_blank" rel = "noreferrer noopener">cyclical neuronal connectivity</a> and reciprocal connections between ‘modules’ of the brain.  One would have to think very carefully before incorporating something of this sort within a transformer stack, but a minimal approach might be to add optionally <a href = "https://arxiv.org/abs/2111.05297" target = "_blank" rel = "noreferrer noopener">recursive layers</a> or blocks.  As a specific example, one could pass the hidden states output by a selected transformer (say, layer 16) to a perceptron layer with a single yes/no output to determine if the states should be passed forward to the next transformer (layer 17) or backwards for a repeated run of the last few layers (layers 14-16).
 
-An even less intrusive intervention would be to give the model the capability to output a new class of padding token that I’ll term a ‘thinking token’.  Thinking tokens would exist purely to allow the model to allocate an additional set of state vectors, and would not be considered in perplexity calculations so long as the model used them infrequently (say, <10% frequency):
+## 2\. Tokens are overloaded as RAM.  
+
+**Standard**:  Chatbots have a range of emergent tricks for making the most out of the state vectors they’re allocated, such as loading <a href = "https://landrewwray.github.io/2023/10/26/Managing-attention.html" target = "_blank" rel = "noreferrer noopener">frequently referenced constants</a> and (it appears) <a href = "https://arxiv.org/abs/2310.02207" target = "_blank" rel = "noreferrer noopener">sentence summaries</a> into the hidden state vectors of punctuation tokens, such as periods.  The <a href = "https://arxiv.org/abs/2309.03409" target = "_blank" rel = "noreferrer noopener">distinctive ML-identified prompts that optimize CoT performance</a> for specific models probably interact constructively with this form of memory management.
+
+**Adventurous**:  One could potentially try to mitigate these memory and 'thinking time' bottlenecks by adding a new class of padding token that I’ll term a ‘thinking token’ to the model’s vocabulary. Thinking tokens would exist purely to allow the model to allocate an additional set of state vectors, and would not be considered in perplexity calculations so long as the model used them infrequently (say, <10% frequency):
 
 <img src="/docs/assets/img/FOT/thinking_token.png" target = "_blank" rel = "noreferrer noopener" alt = "" width="600"/>
 
 **Architecture schematic with a ‘thinking token’**.  *Words proposed by the model are shown at the top of panel (B).  As the model is reading a user-provided prompt, only the [think] token is entered into the input text stream, where it results in the creation of an extra set of state vectors.*
 
-## 2\. Tokens are overloaded as RAM.  
-
-**Standard**:  Chatbots have a range of emergent tricks for making the most out of the state vectors they’re allocated, such as loading <a href = "https://landrewwray.github.io/2023/10/26/Managing-attention.html" target = "_blank" rel = "noreferrer noopener">frequently referenced constants</a> and (it appears) <a href = "https://arxiv.org/abs/2310.02207" target = "_blank" rel = "noreferrer noopener">sentence summaries</a> into the hidden state vectors of punctuation tokens, such as periods.  The <a href = "https://arxiv.org/abs/2309.03409" target = "_blank" rel = "noreferrer noopener">distinctive ML-identified prompts that optimize CoT performance</a> for specific models probably interact constructively with this form of memory management.
-
-**Adventurous**:  One could potentially try to augment this by adding a special ‘thinking’ tokens to the model’s vocabulary.  Outputting up to a certain percentage of thinking tokens (say ~1%) would not be penalized or factored into perplexity calculations.  This would go a (very) small step towards making models function as a persistent awareness – akin to human consciousness.
+This would go a (very) small step towards making models function as a persistent awareness – akin to human consciousness.
 
 **Radical**:  It would be easy to add extra sets LSTM-like memory states that are passed forward along the token axis and communicate with selected transformer layers within the chatbot model.  <a href = "https://arxiv.org/abs/2203.07852" target = "_blank" rel = "noreferrer noopener">Plausible designs</a> in this broader class have been explored, so there are probably good reasons that we’re not seeing them incorporated in the latest open models.
 
