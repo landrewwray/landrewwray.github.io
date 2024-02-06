@@ -4,7 +4,7 @@
 
 *Is a simple tower of transformer blocks really the best design?  (Image created with DALL·E 3)*
 
-The <a href = "https://landrewwray.github.io/2024/01/31/Chatbot-of-Tomorrow-01.html" target = "_blank" rel = "noreferrer noopener">last post</a> looked at how chatbots work, as well as some of their strengths and weaknesses.  This post will list out key examples of how their limitations stem from architectural choices.  The goal is not to be comprehensive, but rather to quickly illustrate key motivations behind the incoming generation of design innovations -- which will be the subject of the next and final post in this 3-part series.
+The <a href = "https://landrewwray.github.io/2024/01/31/Chatbot-of-Tomorrow-01.html" target = "_blank" rel = "noreferrer noopener">last post</a> looked at how chatbots work, as well as some of their strengths and weaknesses.  This post will list out a few principal examples of how their limitations stem from architectural choices.  The goal is not to be comprehensive, but rather to quickly illustrate key motivations behind the incoming generation of design innovations -- which will be the subject of the next and final post in this 3-part series.
 
 If any of the terminology seems obscure, it may help to review the introduction to how chatbots work <a href = "https://landrewwray.github.io/2024/01/31/Chatbot-of-Tomorrow-01.html#3-a-quick-review-of-what-chatbots-do" target = "_blank" rel = "noreferrer noopener">at the end of the last post</a>.
 
