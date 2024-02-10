@@ -1,8 +1,8 @@
 # The Chatbot Architecture of Tomorrow – (1) Setting the Stage
 
-<img src="/docs/assets/img/FOT/Ice_palace_02b.jpg" target = "_blank" rel = "noreferrer noopener" alt = "" width="400"/>
+<img src="/docs/assets/img/FOT/Future city 05.jpeg" target = "_blank" rel = "noreferrer noopener" alt = "" width="400"/>
 
-*Isn't this one something?  The theme here is transcending boundaries.  It's indoor-outdoor living.  It's cutting-edge design with the tranquility of nature.  What, the cold?  Oh, no.  The cold's never bothered* ***me,*** *anyway.  (Image created with DALL·E 3)*
+*Chatbots present the illusion of artificial general intelligence, but do they have the potential to be vibrant thinkers?  (Image created with DALL·E 3)*
 
 It’s been said that 2023 was the year of the chatbot, which is like saying that 1984 was the year of the personal computer and 1989 was the year of the internet.  More is obviously on the way, but what will it look like?  This is the start of a 3-part series of posts that will lean heavily on the academic literature to assess where things are, where they’re going, and what it may take to overcome current limitations on the reasoning ability of chatbots.
 
