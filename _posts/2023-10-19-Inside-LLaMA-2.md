@@ -278,5 +278,5 @@ Here are some helpful references:
 3. The <a href = "https://arxiv.org/abs/2307.09288" target = "_blank" rel = "noreferrer noopener">Llama 2 release paper</a>.
 4. The excellent <a href = "https://www.youtube.com/watch?v=kCc8FmEb1nY" target = "_blank" rel = "noreferrer noopener">“Let’s build GPT” tutorial</a> by Andrej Karpathy (2 hours). 
 5. I’d recommend <a href = "https://github.com/ggerganov/llama.cpp" target = "_blank" rel = "noreferrer noopener">starting here</a> if you want to run a quantized Llama-2 model on your own computer.  Here’s a link to <a href = "https://github.com/landrewwray/LLaMA_editor_GUI" target = "_blank" rel = "noreferrer noopener">my bare-bones GUI</a>, which includes AI editor agents for a collaborative text generation experience.
-6. Jupyter notebooks used to generate most of the output will be \*linked here\* in a future update.
+6. Jupyter notebooks used to generate most of the output are available upon request.
 
